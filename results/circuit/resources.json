@@ -1,0 +1,10 @@
+{
+  "max_probability_error_8_inputs": 1.249000902703301e-16,
+  "qubits": 8,
+  "layers": 2,
+  "original_trainable_angles": 32,
+  "retained_trainable_angles": 24,
+  "scope": "Merge adjacent RY and omit final RZ before basis permutation. Probability equivalence only; ordered CNOT ring preserved. Logical resources only.",
+  "original": "Wire allocations: 8\nTotal gates: 64\nGate counts:\n- Hadamard: 8\n- RY: 24\n- RZ: 16\n- CNOT: 16\nMeasurements:\n- probs(all wires): 1\nDepth: 22",
+  "merged": "Wire allocations: 8\nTotal gates: 48\nGate counts:\n- Hadamard: 8\n- RY: 16\n- RZ: 8\n- CNOT: 16\nMeasurements:\n- probs(all wires): 1\nDepth: 20"
+}

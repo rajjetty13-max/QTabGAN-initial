@@ -1,0 +1,29 @@
+{
+  "model": "ctgan",
+  "seed": 42,
+  "epochs": 100,
+  "seconds": 809.6794655679987,
+  "accuracy": 0.8184051591769884,
+  "f1_macro": 0.7368255494555558,
+  "f1_weighted": 0.8132155020775922,
+  "confusion_matrix": [
+    [
+      6717,
+      714
+    ],
+    [
+      1060,
+      1278
+    ]
+  ],
+  "roc_auc": 0.865019657898575,
+  "average_precision": 0.6466081494990219,
+  "f1_binary": 0.5903002309468822,
+  "mean_ks": 0.016523439980814632,
+  "mean_wasserstein": 0.01400731937892311,
+  "mean_absolute_correlation_difference": 0.01582195026266042,
+  "constant_synthetic_columns": 0,
+  "categorical_jsd": 0.0063949181793599,
+  "accuracy_gap": 0.03869382741324601,
+  "f1_macro_gap": 0.055526995911774124
+}

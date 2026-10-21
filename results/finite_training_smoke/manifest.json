@@ -1,0 +1,53 @@
+{
+  "arguments": {
+    "data": null,
+    "target": null,
+    "categorical": [],
+    "dataset_name": "smoke-breast-cancer",
+    "models": [
+      "qtabgan"
+    ],
+    "epochs": 1,
+    "checkpoints": [],
+    "qubits": 2,
+    "layers": 1,
+    "hadamards_per_layer": true,
+    "shots": 128,
+    "finite_shot_training": true,
+    "finite_shot_evaluation": true,
+    "diff_method": "parameter-shift",
+    "batch_size": 4,
+    "seeds": [
+      42
+    ],
+    "test_size": 0.2,
+    "max_rows": 20,
+    "output": "results/finite_training_smoke"
+  },
+  "versions": {
+    "torch": "2.14.1+cpu",
+    "pennylane": "0.45.1",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.9.1",
+    "ctgan": "0.12.1"
+  },
+  "source_files_sha256": {
+    "benchmark.py": "c3f4215ec553d032978876756566a34701c0ed0db1e415542c13d01aadc60702",
+    "qtabgan/__init__.py": "0eaf5677c10a7870409b0a8376419a9f3ca5b45c1c670923d93636c57ccf4c9d",
+    "qtabgan/config.py": "36c3e8decc01174b1bb187ead8a7887c7fa6b2ca42f148d39ff1b4e1cb539ee5",
+    "qtabgan/evaluation.py": "a8b9dce111e63d5574795ed8b1a7d7c1fef26517dd6d774927a8b055728ab2e0",
+    "qtabgan/model.py": "8d3da34bec98e32d206ba1453024b4118fc61953c2aa7acb0a8fa4507c889c55",
+    "qtabgan/networks.py": "620f9140908f84f3493821ccb582d8dd201a9b029a65e8659f400c779f57af50",
+    "qtabgan/preprocessing.py": "3e2349aea159dd203f8bb27124bde4ed96986f4c5b03c05af96be340dbaddd14",
+    "qtabgan/quantum_generator.py": "da5da5f4ef5063d7f208ec15083bd7e77d25b17d732acaf61b153919ce5712db",
+    "qtabgan/utils.py": "61d458bbf1ce9427f642fe798fd54754389a0f8d58ed9dd4f8cfd27431f54306"
+  },
+  "source_sha256": "sklearn.load_breast_cancer",
+  "labels": [
+    "0",
+    "1"
+  ],
+  "paper_reproduction": false,
+  "f1_convention": "macro, weighted and binary reported; paper unspecified"
+}

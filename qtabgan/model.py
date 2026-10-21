@@ -1,367 +1,102 @@
+"""Hybrid generator: quantum probabilities + labels -> mapper -> feature vector.
+
+The discriminator sees features, following the paper's diagram. Consequently it
+cannot directly enforce label/feature consistency; downstream utility tests it.
+"""
 import numpy as np
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
-
 from .config import QTabGANConfig
 from .quantum_generator import QuantumGeneratorCore
-from .networks import (
-    ClassicalMapper,
-    Discriminator,
-)
+from .networks import ClassicalMapper, Discriminator
 from .utils import set_seed
 
 
 class QTabGAN(nn.Module):
-    """
-    Hybrid quantum-classical GAN for tabular data.
-
-    Architecture:
-
-        random noise
-              |
-              v
-        quantum circuit
-              |
-              v
-        probability vector
-              |
-              +------ condition
-              |
-              v
-       classical mapper
-              |
-              v
-        synthetic table
-
-        discriminator
-        /           \\
-      real         fake
-    """
-
-    def __init__(
-        self,
-        data_dim,
-        condition_dim,
-        config=None,
-    ):
+    def __init__(self, data_dim, condition_dim, config=None):
         super().__init__()
-
-        if config is None:
-            config = QTabGANConfig()
-
-        self.config = config
-
-        self.data_dim = data_dim
-        self.condition_dim = condition_dim
-
+        self.config = config or QTabGANConfig()
+        config = self.config
+        self.data_dim, self.condition_dim = data_dim, condition_dim
         set_seed(config.seed)
-
-        # Quantum generator
-        self.quantum_generator = (
-            QuantumGeneratorCore(
-                n_qubits=config.n_qubits,
-                n_layers=config.n_layers,
-                shots=config.shots,
-            )
-        )
-
-        quantum_dim = (
-            2 ** config.n_qubits
-        )
-
-        # Classical mapper
-        self.mapper = ClassicalMapper(
-            quantum_dim=quantum_dim,
-            condition_dim=condition_dim,
-            output_dim=data_dim,
-            hidden_dims=config.mapper_hidden
-        )
-
-        # Discriminator
-        self.discriminator = Discriminator(
-            input_dim=data_dim,
-            hidden_dims=config.discriminator_hidden
-        )
+        self.quantum_generator = QuantumGeneratorCore(
+            config.n_qubits, config.n_layers, config.shots, config.diff_method, config.seed,
+            hadamards_per_layer=config.hadamards_per_layer,
+            finite_shot_training=config.finite_shot_training)
+        self.mapper = ClassicalMapper(2 ** config.n_qubits, condition_dim,
+                                      data_dim, config.mapper_hidden)
+        self.discriminator = Discriminator(data_dim, config.discriminator_hidden)
+        self.to(config.device)
 
     def _noise(self, batch_size):
+        return torch.rand(batch_size, self.config.n_qubits, device=self.config.device) * np.pi
 
-        return (
-            torch.rand(
-                batch_size,
-                self.config.n_qubits,
-                device=self.config.device
-            )
-            * np.pi
-        )
+    def generate_from_condition(self, condition, sample=False):
+        noise = self._noise(len(condition))
+        probabilities = (self.quantum_generator.sampled_probabilities(noise) if sample
+                         else self.quantum_generator(noise))
+        return self.mapper(probabilities, condition)
 
-    def generate_from_condition(
-        self,
-        condition
-    ):
-        """
-        Generate synthetic samples using a supplied condition.
-        """
-
-        batch_size = condition.shape[0]
-
-        noise = self._noise(
-            batch_size
-        )
-
-        quantum_probability = (
-            self.quantum_generator(
-                noise
-            )
-        )
-
-        synthetic = self.mapper(
-            quantum_probability,
-            condition
-        )
-
-        return synthetic
-
-    def generate(
-    self,
-    condition,
-    sample=True
-    ):
-        """
-        Public generation function.
-
-        Accepts either a NumPy array or PyTorch tensor.
-        """
-
+    def generate(self, condition, sample=False):
+        """Use the training probability QNode; sample=True uses shot histograms."""
+        previous_mode = self.training
         self.eval()
+        condition = torch.as_tensor(condition, dtype=torch.float32, device=self.config.device)
+        try:
+            with torch.no_grad():
+                return self.generate_from_condition(condition, sample=sample).cpu().numpy()
+        finally:
+            self.train(previous_mode)
 
-        if not isinstance(condition, torch.Tensor):
-            condition = torch.tensor(
-                condition,
-                dtype=torch.float32,
-                device=self.config.device
-            )
-        else:
-            condition = condition.to(
-                device=self.config.device,
-                dtype=torch.float32
-            )
-
-        with torch.no_grad():
-
-            synthetic = (
-                self.generate_from_condition(
-                 condition
-                )
-            )
-
-        return synthetic.cpu().numpy()
-
-    def fit(
-        self,
-        data,
-        conditions,
-        verbose=True
-    ):
-        """
-        Train QTabGAN.
-
-        Parameters
-        ----------
-        data:
-            Preprocessed real tabular data.
-
-        conditions:
-            Condition vector for each row.
-        """
-
-        data_tensor = torch.tensor(
-            data,
-            dtype=torch.float32,
-            device=self.config.device
-        )
-
-        condition_tensor = torch.tensor(
-            conditions,
-            dtype=torch.float32,
-            device=self.config.device
-        )
-
-        dataset = TensorDataset(
-            data_tensor,
-            condition_tensor
-        )
-
-        loader = DataLoader(
-            dataset,
-            batch_size=self.config.batch_size,
-            shuffle=True
-        )
-
-        generator_parameters = list(
-            self.quantum_generator.parameters()
-        ) + list(
-            self.mapper.parameters()
-        )
-
-        generator_optimizer = torch.optim.Adam(
-            generator_parameters,
-            lr=self.config.lr_generator
-        )
-
-        discriminator_optimizer = torch.optim.Adam(
-            self.discriminator.parameters(),
-            lr=self.config.lr_discriminator
-        )
-
+    def fit(self, data, conditions, verbose=True):
+        """Continue training, preserving Adam moments across fit calls."""
+        self.train()
+        data = torch.as_tensor(data, dtype=torch.float32, device=self.config.device)
+        conditions = torch.as_tensor(conditions, dtype=torch.float32, device=self.config.device)
+        if data.ndim != 2 or data.shape[1] != self.data_dim:
+            raise ValueError("data must have shape (rows, data_dim)")
+        if conditions.ndim != 2 or conditions.shape != (len(data), self.condition_dim) or not len(data):
+            raise ValueError("conditions must have shape (nonzero rows, condition_dim)")
+        if not torch.isfinite(data).all() or not torch.isfinite(conditions).all():
+            raise ValueError("Training data and conditions must be finite")
+        if self.config.epochs < 1 or self.config.batch_size < 1:
+            raise ValueError("epochs and batch_size must be positive")
+        loader = DataLoader(TensorDataset(data, conditions), batch_size=self.config.batch_size, shuffle=True)
+        generator_parameters = list(self.quantum_generator.parameters()) + list(self.mapper.parameters())
+        if not hasattr(self, '_generator_optimizer'):
+            self._generator_optimizer = torch.optim.Adam(generator_parameters, lr=self.config.lr_generator)
+            self._discriminator_optimizer = torch.optim.Adam(self.discriminator.parameters(), lr=self.config.lr_discriminator)
+        g_opt, d_opt = self._generator_optimizer, self._discriminator_optimizer
         criterion = nn.BCEWithLogitsLoss()
-
-        history = {
-            "generator_loss": [],
-            "discriminator_loss": []
-        }
-
-        for epoch in range(
-            self.config.epochs
-        ):
-
-            generator_total = 0.0
-            discriminator_total = 0.0
-
-            batches = 0
-
-            for real_data, condition in loader:
-
-                batches += 1
-
-                batch_size = (
-                    real_data.shape[0]
-                )
-
-                # -------------------------------------------------
-                # Discriminator step
-                # -------------------------------------------------
-
-                discriminator_optimizer.zero_grad()
-
-                real_logits = (
-                    self.discriminator(
-                        real_data
-                    )
-                )
-
-                real_labels = torch.ones_like(
-                    real_logits
-                )
-
-                real_loss = criterion(
-                    real_logits,
-                    real_labels
-                )
-
-                # Generate fake data
+        history = {key: [] for key in ['generator_loss', 'discriminator_loss', 'quantum_gradient_norm']}
+        for epoch in range(self.config.epochs):
+            totals = np.zeros(3)
+            for real, condition in loader:
+                d_opt.zero_grad(set_to_none=True)
+                real_logits = self.discriminator(real)
                 with torch.no_grad():
+                    fake = self.generate_from_condition(condition)
+                fake_logits = self.discriminator(fake)
+                d_loss = (criterion(real_logits, torch.ones_like(real_logits)) +
+                          criterion(fake_logits, torch.zeros_like(fake_logits))) / 2
+                if not torch.isfinite(d_loss): raise FloatingPointError('Nonfinite discriminator loss')
+                d_loss.backward(); d_opt.step()
 
-                    fake_data = (
-                        self.generate_from_condition(
-                            condition
-                        )
-                    )
-
-                fake_logits = (
-                    self.discriminator(
-                        fake_data
-                    )
-                )
-
-                fake_labels = torch.zeros_like(
-                    fake_logits
-                )
-
-                fake_loss = criterion(
-                    fake_logits,
-                    fake_labels
-                )
-
-                discriminator_loss = (
-                    real_loss + fake_loss
-                ) / 2
-
-                discriminator_loss.backward()
-
-                discriminator_optimizer.step()
-
-                # -------------------------------------------------
-                # Generator step
-                # -------------------------------------------------
-
-                generator_optimizer.zero_grad()
-
-                fake_data = (
-                    self.generate_from_condition(
-                        condition
-                    )
-                )
-
-                fake_logits = (
-                    self.discriminator(
-                        fake_data
-                    )
-                )
-
-                generator_labels = (
-                    torch.ones_like(
-                        fake_logits
-                    )
-                )
-
-                generator_loss = criterion(
-                    fake_logits,
-                    generator_labels
-                )
-
-                generator_loss.backward()
-
-                generator_optimizer.step()
-
-                generator_total += (
-                    generator_loss.item()
-                )
-
-                discriminator_total += (
-                    discriminator_loss.item()
-                )
-
-            average_generator = (
-                generator_total / batches
-            )
-
-            average_discriminator = (
-                discriminator_total / batches
-            )
-
-            history[
-                "generator_loss"
-            ].append(
-                average_generator
-            )
-
-            history[
-                "discriminator_loss"
-            ].append(
-                average_discriminator
-            )
-
+                g_opt.zero_grad(set_to_none=True)
+                logits = self.discriminator(self.generate_from_condition(condition))
+                g_loss = criterion(logits, torch.ones_like(logits))
+                if not torch.isfinite(g_loss): raise FloatingPointError('Nonfinite generator loss')
+                g_loss.backward()
+                gradient = self.quantum_generator.weights.grad
+                if gradient is None or not torch.isfinite(gradient).all():
+                    raise FloatingPointError('Missing or nonfinite quantum gradients')
+                totals += [g_loss.item(), d_loss.item(), gradient.norm().item()]
+                g_opt.step()
+            for key, value in zip(history, totals / len(loader)):
+                history[key].append(float(value))
             if verbose:
-
-                print(
-                    f"Epoch "
-                    f"{epoch + 1:03d}/"
-                    f"{self.config.epochs} | "
-                    f"G Loss: "
-                    f"{average_generator:.4f} | "
-                    f"D Loss: "
-                    f"{average_discriminator:.4f}"
-                )
-
+                print(f'Epoch {epoch+1:03d}/{self.config.epochs} | '
+                      f'G Loss: {history["generator_loss"][-1]:.4f} | '
+                      f'D Loss: {history["discriminator_loss"][-1]:.4f}', flush=True)
         return history

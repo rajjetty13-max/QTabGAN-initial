@@ -1,0 +1,50 @@
+{
+  "arguments": {
+    "data": "data/loan_prepared.csv",
+    "target": "PersonalLoan",
+    "categorical": [
+      "ZIP Code",
+      "Education",
+      "SecuritiesAccount",
+      "CDAccount",
+      "Online",
+      "CreditCard"
+    ],
+    "dataset_name": "loan",
+    "models": [
+      "qtabgan",
+      "ctgan"
+    ],
+    "epochs": 100,
+    "checkpoints": [
+      30
+    ],
+    "qubits": 8,
+    "layers": 2,
+    "shots": 1024,
+    "finite_shot_evaluation": false,
+    "diff_method": "backprop",
+    "batch_size": 64,
+    "seeds": [
+      42
+    ],
+    "test_size": 0.3,
+    "max_rows": null,
+    "output": "results/loan_100"
+  },
+  "versions": {
+    "torch": "2.14.1+cpu",
+    "pennylane": "0.45.1",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.9.1",
+    "ctgan": "0.12.1"
+  },
+  "source_sha256": "4c17469be4644ff584cc5fa51ccba4a385a9cc45572ef926f05366646a39f641",
+  "labels": [
+    "0",
+    "1"
+  ],
+  "paper_reproduction": false,
+  "f1_convention": "macro, weighted and binary reported; paper unspecified"
+}

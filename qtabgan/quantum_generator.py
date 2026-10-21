@@ -1,3 +1,4 @@
+"""One circuit definition shared by training, shot sampling and resource reports."""
 import numpy as np
 import pennylane as qml
 import torch
@@ -5,206 +6,65 @@ from torch import nn
 
 
 class QuantumGeneratorCore(nn.Module):
-    """
-    Variational quantum circuit used by QTabGAN.
-
-    The circuit contains:
-        - Hadamard initialization
-        - RY/RZ trainable rotations
-        - Circular CNOT entanglement
-        - Probability-vector output
-    """
-
-    def __init__(
-        self,
-        n_qubits=4,
-        n_layers=2,
-        shots=256,
-    ):
+    def __init__(self, n_qubits=8, n_layers=2, shots=1024,
+                 diff_method="backprop", seed=42, hadamards_per_layer=False, finite_shot_training=False):
         super().__init__()
+        if n_qubits < 2 or n_layers < 1 or shots < 1:
+            raise ValueError("Require at least two qubits, one layer and one shot")
+        self.n_qubits, self.n_layers, self.shots = n_qubits, n_layers, shots
+        if finite_shot_training and diff_method != "parameter-shift":
+            raise ValueError("Finite-shot training requires parameter-shift gradients")
+        self.finite_shot_training = finite_shot_training
+        self.diff_method = diff_method
+        self.hadamards_per_layer = hadamards_per_layer
+        self.weights = nn.Parameter(2 * np.pi * torch.rand(n_layers, n_qubits, 2))
+        self.device = qml.device("default.qubit", wires=n_qubits, seed=seed)
+        self.circuit = qml.QNode(self._probabilities, self.device, interface="torch",
+                                 diff_method=diff_method)
+        if finite_shot_training:
+            self.circuit = qml.set_shots(self.circuit, shots=shots)
+        sampling_device = qml.device("default.qubit", wires=n_qubits, seed=seed)
+        self.sampling_circuit = qml.set_shots(
+            qml.QNode(self._counts, sampling_device), shots=shots)
 
-        self.n_qubits = n_qubits
-        self.n_layers = n_layers
-        self.shots = shots
+    def operations(self, noise, weights):
+        # Paper leaves noise encoding and repeated Hadamards ambiguous. We use
+        # one H initialization by default, RY noise, then L RY/RZ + rings.
+        # Repeated layer Hadamards are an explicit alternative interpretation.
+        for wire in range(self.n_qubits):
+            qml.Hadamard(wires=wire)
+            qml.RY(noise[..., wire], wires=wire)
+        for layer in range(self.n_layers):
+            if self.hadamards_per_layer and layer > 0:
+                for wire in range(self.n_qubits):
+                    qml.Hadamard(wires=wire)
+            for wire in range(self.n_qubits):
+                qml.RY(weights[layer, wire, 0], wires=wire)
+                qml.RZ(weights[layer, wire, 1], wires=wire)
+            for wire in range(self.n_qubits):
+                qml.CNOT(wires=[wire, (wire + 1) % self.n_qubits])
 
-        self.device = qml.device(
-            "default.qubit",
-            wires=n_qubits
-        )
+    def _probabilities(self, noise, weights):
+        self.operations(noise, weights)
+        return qml.probs(wires=range(self.n_qubits))
 
-        # Trainable quantum parameters
-        self.weights = nn.Parameter(
-            0.01 * torch.randn(
-                n_layers,
-                n_qubits,
-                2
-            )
-        )
-
-        @qml.qnode(
-            self.device,
-            interface="torch",
-            diff_method="parameter-shift"
-        )
-        def circuit(noise, weights):
-
-            # Hadamard initialization
-            for qubit in range(n_qubits):
-                qml.Hadamard(
-                    wires=qubit
-                )
-
-            # Encode random noise
-            for qubit in range(n_qubits):
-
-                qml.RY(
-                    noise[qubit],
-                    wires=qubit
-                )
-
-            # Trainable layers
-            for layer in range(n_layers):
-
-                for qubit in range(n_qubits):
-
-                    qml.RY(
-                        weights[layer, qubit, 0],
-                        wires=qubit
-                    )
-
-                    qml.RZ(
-                        weights[layer, qubit, 1],
-                        wires=qubit
-                    )
-
-                # Circular CNOT entanglement
-                for qubit in range(n_qubits):
-
-                    target = (
-                        qubit + 1
-                    ) % n_qubits
-
-                    qml.CNOT(
-                        wires=[
-                            qubit,
-                            target
-                        ]
-                    )
-
-            return qml.probs(
-                wires=range(n_qubits)
-            )
-
-        self.circuit = circuit
+    def _counts(self, noise, weights):
+        self.operations(noise, weights)
+        return qml.counts(wires=range(self.n_qubits))
 
     def forward(self, noise):
-        """
-        noise shape:
-            [batch_size, n_qubits]
-
-        Returns:
-            [batch_size, 2**n_qubits]
-        """
-
-        outputs = []
-
-        for sample in noise:
-
-            probabilities = self.circuit(
-                sample,
-                self.weights
-            )
-
-            outputs.append(probabilities)
-
-        return torch.stack(outputs).float()
+        if noise.ndim != 2 or noise.shape[1] != self.n_qubits:
+            raise ValueError("noise must have shape (batch, n_qubits)")
+        if self.diff_method == "parameter-shift":
+            return torch.stack([self.circuit(row, self.weights) for row in noise]).float()
+        return self.circuit(noise, self.weights).float()
 
     def sample_bitstrings(self, noise):
-        """
-        Generate actual finite-shot samples.
+        weights = self.weights.detach().cpu().numpy()
+        return [self.sampling_circuit(row.detach().cpu().numpy(), weights) for row in noise]
 
-        This is intended for final sampling/evaluation rather
-        than differentiable GAN training.
-        """
-
-        sampling_device = qml.device(
-            "default.qubit",
-            wires=self.n_qubits,
-            shots=self.shots
-        )
-
-        @qml.qnode(sampling_device)
-        def sampling_circuit(
-            noise_sample,
-            weights
-        ):
-
-            for qubit in range(self.n_qubits):
-
-                qml.Hadamard(
-                    wires=qubit
-                )
-
-                qml.RY(
-                    noise_sample[qubit],
-                    wires=qubit
-                )
-
-            for layer in range(self.n_layers):
-
-                for qubit in range(self.n_qubits):
-
-                    qml.RY(
-                        weights[
-                            layer,
-                            qubit,
-                            0
-                        ],
-                        wires=qubit
-                    )
-
-                    qml.RZ(
-                        weights[
-                            layer,
-                            qubit,
-                            1
-                        ],
-                        wires=qubit
-                    )
-
-                for qubit in range(self.n_qubits):
-
-                    target = (
-                        qubit + 1
-                    ) % self.n_qubits
-
-                    qml.CNOT(
-                        wires=[
-                            qubit,
-                            target
-                        ]
-                    )
-
-            return qml.counts(
-                wires=range(self.n_qubits)
-            )
-
-        results = []
-
-        weights = (
-            self.weights
-            .detach()
-            .cpu()
-            .numpy()
-        )
-
-        for sample in noise:
-
-            counts = sampling_circuit(
-                sample.detach().cpu().numpy(),
-                weights
-            )
-
-            results.append(counts)
-
-        return results
+    def sampled_probabilities(self, noise):
+        counts = self.sample_bitstrings(noise)
+        return torch.tensor([[row.get(format(i, f"0{self.n_qubits}b"), 0) / self.shots
+                              for i in range(2 ** self.n_qubits)] for row in counts],
+                            dtype=torch.float32, device=noise.device)

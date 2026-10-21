@@ -1,0 +1,2 @@
+model,seed,epochs,seconds,accuracy,f1_macro,f1_weighted,confusion_matrix,roc_auc,average_precision,f1_binary,mean_ks,mean_wasserstein,mean_absolute_correlation_difference,unique_pair_correlation_difference,constant_synthetic_columns,categorical_jsd,accuracy_gap,f1_macro_gap
+qtabgan,42,2,3.770333330001449,0.6,0.375,0.4875,"[[0, 7], [1, 12]]",0.5384615384615384,0.705420602789024,0.75,0.9725000000000003,1.0044425966486472,0.6390459135164819,0.6766368496056868,12,,0.4,0.625

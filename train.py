@@ -15,7 +15,7 @@ from qtabgan.preprocessing import (
 def main():
 
     parser = argparse.ArgumentParser(
-        description="Train QTabGAN"
+        description="Train QTabGAN (use benchmark.py for holdout evaluation)"
     )
 
     parser.add_argument(
@@ -53,7 +53,12 @@ def main():
     parser.add_argument(
         "--qubits",
         type=int,
-        default=4
+        default=8
+    )
+
+    parser.add_argument(
+        "--task", choices=["classification", "regression"], default="classification",
+        help="Classification uses one-hot class labels; regression uses a scalar condition"
     )
 
     args = parser.parse_args()
@@ -97,7 +102,7 @@ def main():
     # Create condition vector
     # ---------------------------------------------------------
 
-    if target.dtype == "object":
+    if args.task == "classification":
 
         condition = pd.get_dummies(
             target

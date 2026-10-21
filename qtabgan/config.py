@@ -12,9 +12,12 @@ class QTabGANConfig:
     """
 
     # Quantum circuit
-    n_qubits: int = 4
+    n_qubits: int = 8
     n_layers: int = 2
-    shots: int = 256
+    shots: int = 1024
+    diff_method: str = "backprop"
+    hadamards_per_layer: bool = False
+    finite_shot_training: bool = False
 
     # Classical mapper
     mapper_hidden: Tuple[int, ...] = (128, 128)

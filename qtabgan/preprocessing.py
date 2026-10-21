@@ -48,6 +48,7 @@ class TabularPreprocessor:
         Learn preprocessing parameters from the dataset.
         """
 
+        self.output_columns = []
         # Numerical preprocessing parameters
         for column in self.numerical_columns:
 

@@ -1,0 +1,33 @@
+{
+  "paper": "QTabGAN: A Hybrid Quantum-Classical GAN for Tabular Data Synthesis",
+  "arxiv": "2602.12704v2",
+  "provided_pdf_sha256": "a3a6b8ea290025482bd6d63fcb64b66d4ea8baf4a292c419bec8c1f32dc22062",
+  "source": "User-provided PDF, Table 3, page 17",
+  "adult": {
+    "real_accuracy": 0.776,
+    "synthetic_accuracy": 0.774,
+    "accuracy_gap": 0.002,
+    "real_f1": 0.7619,
+    "synthetic_f1": 0.7539,
+    "f1_gap": 0.008,
+    "train_fraction": 0.8
+  },
+  "loan": {
+    "real_accuracy": 0.96,
+    "synthetic_accuracy": 0.938,
+    "accuracy_gap": 0.022,
+    "real_f1": 0.957,
+    "synthetic_f1": 0.9291,
+    "f1_gap": 0.0279,
+    "train_fraction": 0.7
+  },
+  "specified_quantum_qubits": 8,
+  "unresolved_settings": [
+    "Exact train/test row selection and random seeds",
+    "Downstream classifier and F1 averaging",
+    "Layer counts, classical widths and optimizer settings",
+    "Noise encoding and whether Hadamards repeat per layer",
+    "Precise shot count and finite-shot training estimator"
+  ],
+  "status": "Reference values, not reproduced measurements"
+}

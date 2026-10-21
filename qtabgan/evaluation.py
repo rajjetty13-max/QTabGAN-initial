@@ -1,189 +1,62 @@
+"""Holdout utility. Training labels must always be supplied explicitly."""
 import numpy as np
-
 from scipy.spatial.distance import jensenshannon
-
-from sklearn.ensemble import (
-    RandomForestClassifier,
-    RandomForestRegressor,
-)
-
-from sklearn.metrics import (
-    accuracy_score,
-    mean_squared_error,
-)
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.metrics import (accuracy_score, f1_score, confusion_matrix,
+                             mean_squared_error, explained_variance_score, r2_score)
 
 
-def mean_squared_error_metric(
-    real,
-    synthetic
-):
-    """
-    Mean squared error between two arrays.
-    """
-
-    return mean_squared_error(
-        real,
-        synthetic
-    )
+def mean_squared_error_metric(real, synthetic):
+    return mean_squared_error(real, synthetic)
 
 
-def average_categorical_jsd(
-    real,
-    synthetic,
-    categorical_indices
-):
-    """
-    Average Jensen-Shannon divergence
-    across categorical columns.
-    """
-
+def average_categorical_jsd(real, synthetic, categorical_indices):
     scores = []
-
     for index in categorical_indices:
-
-        real_values = real[:, index]
-        synthetic_values = synthetic[:, index]
-
-        categories = np.unique(
-            np.concatenate(
-                [
-                    real_values,
-                    synthetic_values
-                ]
-            )
-        )
-
-        real_distribution = np.array(
-            [
-                np.mean(
-                    real_values == category
-                )
-                for category in categories
-            ]
-        )
-
-        synthetic_distribution = np.array(
-            [
-                np.mean(
-                    synthetic_values == category
-                )
-                for category in categories
-            ]
-        )
-
-        score = (
-            jensenshannon(
-                real_distribution,
-                synthetic_distribution
-            ) ** 2
-        )
-
-        scores.append(score)
-
-    if len(scores) == 0:
-        return 0.0
-
-    return float(
-        np.mean(scores)
-    )
+        categories = np.unique(np.concatenate([real[:, index], synthetic[:, index]]))
+        p = [np.mean(real[:, index] == c) for c in categories]
+        q = [np.mean(synthetic[:, index] == c) for c in categories]
+        scores.append(jensenshannon(p, q) ** 2)
+    return float(np.mean(scores)) if scores else None
 
 
-def classification_utility(
-    train_real,
-    train_synthetic,
-    test_real,
-    test_labels
-):
+def classification_utility(train_real, train_synthetic, test_real, test_labels,
+                           *, real_labels, synthetic_labels, seed=42):
+    result = {}
+    for name, x, y in [("real", train_real, real_labels),
+                       ("synthetic", train_synthetic, synthetic_labels)]:
+        model = RandomForestClassifier(n_estimators=100, random_state=seed, n_jobs=1)
+        model.fit(x, y)
+        pred = model.predict(test_real)
+        result[f"{name}_train_accuracy"] = float(accuracy_score(test_labels, pred))
+        result[f"{name}_train_f1_macro"] = float(f1_score(test_labels, pred, average="macro", zero_division=0))
+        result[f"{name}_confusion_matrix"] = confusion_matrix(test_labels, pred).tolist()
+    return result
+
+
+def regression_utility(train_real, train_synthetic, test_real, test_labels,
+                       *, real_labels, synthetic_labels, seed=42):
+    result = {}
+    for name, x, y in [("real", train_real, real_labels),
+                       ("synthetic", train_synthetic, synthetic_labels)]:
+        model = RandomForestRegressor(random_state=seed, n_jobs=1).fit(x, y)
+        pred = model.predict(test_real)
+        result[f"{name}_train_mse"] = float(mean_squared_error(test_labels, pred))
+        result[f"{name}_train_evs"] = float(explained_variance_score(test_labels, pred))
+        result[f"{name}_train_r2"] = float(r2_score(test_labels, pred))
+    return result
+
+
+def correlation_difference(real, synthetic):
+    """Mean absolute correlation error over unique pairs, excluding constants.
+
+    Return None when fewer than two columns vary in both tables. Constant-column
+    counts should be reported separately; dropping them is not a fidelity pass.
     """
-    Train classifiers using real and synthetic
-    training data and evaluate on real test data.
-    """
-
-    model_real = RandomForestClassifier(
-        random_state=42
-    )
-
-    model_synthetic = RandomForestClassifier(
-        random_state=42
-    )
-
-    model_real.fit(
-        train_real,
-        test_labels[:len(train_real)]
-    )
-
-    model_synthetic.fit(
-        train_synthetic,
-        test_labels[:len(train_synthetic)]
-    )
-
-    predictions_real = model_real.predict(
-        test_real
-    )
-
-    predictions_synthetic = (
-        model_synthetic.predict(
-            test_real
-        )
-    )
-
-    return {
-        "real_train_accuracy": accuracy_score(
-            test_labels,
-            predictions_real
-        ),
-        "synthetic_train_accuracy": accuracy_score(
-            test_labels,
-            predictions_synthetic
-        )
-    }
-
-
-def regression_utility(
-    train_real,
-    train_synthetic,
-    test_real,
-    test_labels
-):
-    """
-    Compare downstream regression performance.
-    """
-
-    model_real = RandomForestRegressor(
-        random_state=42
-    )
-
-    model_synthetic = RandomForestRegressor(
-        random_state=42
-    )
-
-    model_real.fit(
-        train_real,
-        test_labels[:len(train_real)]
-    )
-
-    model_synthetic.fit(
-        train_synthetic,
-        test_labels[:len(train_synthetic)]
-    )
-
-    predictions_real = model_real.predict(
-        test_real
-    )
-
-    predictions_synthetic = (
-        model_synthetic.predict(
-            test_real
-        )
-    )
-
-    return {
-        "real_train_mse": mean_squared_error(
-            test_labels,
-            predictions_real
-        ),
-        "synthetic_train_mse": mean_squared_error(
-            test_labels,
-            predictions_synthetic
-        )
-    }
+    real, synthetic = np.asarray(real), np.asarray(synthetic)
+    valid = (real.std(0) > 1e-10) & (synthetic.std(0) > 1e-10)
+    if valid.sum() < 2:
+        return None
+    delta = np.abs(np.corrcoef(real[:, valid], rowvar=False) -
+                   np.corrcoef(synthetic[:, valid], rowvar=False))
+    return float(delta[np.triu_indices(int(valid.sum()), k=1)].mean())

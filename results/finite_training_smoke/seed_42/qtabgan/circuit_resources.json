@@ -1,0 +1,6 @@
+{
+  "resources": "Wire allocations: 2\nTotal gates: 10\nGate counts:\n- Hadamard: 2\n- RY: 4\n- RZ: 2\n- CNOT: 2\nMeasurements:\n- probs(all wires): 1\nDepth: 6",
+  "trainable_angles": 4,
+  "cnot_count": 2,
+  "optimization_applied": false
+}

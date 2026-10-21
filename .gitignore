@@ -39,3 +39,13 @@ logs/
 *.egg-info/
 dist/
 build/
+# Keep numerical research reports; datasets and learned weights stay local.
+!results/**/*.csv
+*.pkl
+*.npz
+*.joblib
+
+# IonQ execution bundles contain checkpoints and account job metadata.
+hardware_runs/
+.env
+.env.*

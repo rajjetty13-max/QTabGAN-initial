@@ -5,3 +5,5 @@ scipy
 matplotlib
 torch
 pennylane
+ctgan
+requests

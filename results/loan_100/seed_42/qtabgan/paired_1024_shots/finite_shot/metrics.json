@@ -1,0 +1,27 @@
+{
+  "mode": "finite_shot",
+  "shots": 1024,
+  "training": "analytic",
+  "gate_noise": false,
+  "epochs_trained": 100,
+  "accuracy": 0.5786666666666667,
+  "f1_macro": 0.4431390977443609,
+  "f1_weighted": 0.6651112781954887,
+  "confusion_matrix": [
+    [
+      804,
+      552
+    ],
+    [
+      80,
+      64
+    ]
+  ],
+  "roc_auc": 0.59390875942314,
+  "average_precision": 0.15952130505088774,
+  "f1_binary": 0.16842105263157894,
+  "mean_ks": 0.018143155383238817,
+  "mean_wasserstein": 0.019878748330136135,
+  "mean_absolute_correlation_difference": 0.5162541167381023,
+  "constant_synthetic_columns": 473
+}
