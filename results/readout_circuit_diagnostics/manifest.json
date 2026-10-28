@@ -1,0 +1,26 @@
+{
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "ansatze": [
+    "paper",
+    "paper_readout"
+  ],
+  "latent_samples_per_seed": 32,
+  "training_performed": false,
+  "hardware_used": false,
+  "active_derivative_rms_threshold": 1e-09,
+  "relative_rank_tolerance": 1e-08,
+  "depth_definition": "Logical gate dependency depth, not backend native/transpiled depth",
+  "versions": {
+    "torch": "2.14.1+cpu",
+    "pennylane": "0.45.1",
+    "numpy": "2.5.4"
+  },
+  "source_sha256": {
+    "/home/ojasp/Music/fire298/QTabGAN-initial/scripts/compare_circuits.py": "29b39137364d6d22a588a94b24b00fd2cd343105980e5e025cebc3e9f9ce7315",
+    "qtabgan/quantum_generator.py": "de3410ea127a0c840d2bae07acb38c10005bbb888ff595a0021e77226c46de44"
+  }
+}

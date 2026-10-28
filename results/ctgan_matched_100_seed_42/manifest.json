@@ -1,0 +1,61 @@
+{
+  "model": "SDV CTGAN",
+  "ctgan_version": "0.12.1",
+  "reference_run": "results/conditioning_trial_100_seed_42",
+  "reference_manifest": {
+    "data_sha256": "4c17469be4644ff584cc5fa51ccba4a385a9cc45572ef926f05366646a39f641",
+    "condition_discriminator": true,
+    "training_seed": 20042,
+    "ansatz": "paper",
+    "target": "PersonalLoan",
+    "categorical": [
+      "ZIP Code",
+      "Education",
+      "SecuritiesAccount",
+      "CDAccount",
+      "Online",
+      "CreditCard"
+    ],
+    "seed": 42,
+    "batch_size": 64,
+    "eval_every": 10,
+    "protocol": "stratified 60% train / 20% validation / 20% test; validation macro F1 selection",
+    "paper_reproduction": false,
+    "versions": {
+      "torch": "2.14.1+cpu",
+      "pennylane": "0.45.1",
+      "numpy": "2.5.4",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.9.1"
+    },
+    "source_sha256": {
+      "extended_benchmark.py": "23df4037f1542246ad35a8fc0827f08a65a6329a1fb5f0b5ea6c8eb2e85a43b1",
+      "benchmark.py": "004a346b07ace38bde7497bbce9e18b016a63bc705b091fef1654c0986bb36b9",
+      "qtabgan/__init__.py": "0eaf5677c10a7870409b0a8376419a9f3ca5b45c1c670923d93636c57ccf4c9d",
+      "qtabgan/config.py": "701400de0a7c067e4ac010013de0c58b56172df1dcc084ccf9556d695e20fb50",
+      "qtabgan/evaluation.py": "a8b9dce111e63d5574795ed8b1a7d7c1fef26517dd6d774927a8b055728ab2e0",
+      "qtabgan/ionq.py": "8e1ec5ea848d53aeac2b96a58fb1ac9da15ca3b4b66ab17332831ad3bea25d6c",
+      "qtabgan/model.py": "3787e2a5f87d7a0f04e8d36f88a98c88f53a6ab023ecfd2b8a072f5adeae7c82",
+      "qtabgan/networks.py": "620f9140908f84f3493821ccb582d8dd201a9b029a65e8659f400c779f57af50",
+      "qtabgan/preprocessing.py": "3e2349aea159dd203f8bb27124bde4ed96986f4c5b03c05af96be340dbaddd14",
+      "qtabgan/quantum_generator.py": "bc275179924875b7a1867c3bc535d764cc500ed02795cf5ef42533a246d4281a",
+      "qtabgan/utils.py": "61d458bbf1ce9427f642fe798fd54754389a0f8d58ed9dd4f8cfd27431f54306"
+    }
+  },
+  "epochs": 100,
+  "batch_size": 64,
+  "pac": 2,
+  "generator_dim": [
+    128,
+    128
+  ],
+  "discriminator_dim": [
+    128,
+    64,
+    32
+  ],
+  "selection": "Final epoch only; no validation checkpoint selection",
+  "source_sha256": "39ce69d3347d48a5000a603702d262f176743e5d7c103008d7948834c9f48dae",
+  "paper_reproduction": false,
+  "note": "CTGAN differs from paper CTAB-GAN/CTAB-GAN+; equal epochs do not imply equal compute or optimization."
+}

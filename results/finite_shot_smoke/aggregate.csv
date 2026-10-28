@@ -1,4 +1,0 @@
-,seed,seed,epochs,epochs,seconds,seconds,accuracy,accuracy,f1_macro,f1_macro,f1_weighted,f1_weighted,roc_auc,roc_auc,average_precision,average_precision,f1_binary,f1_binary,mean_ks,mean_ks,mean_wasserstein,mean_wasserstein,mean_absolute_correlation_difference,mean_absolute_correlation_difference,constant_synthetic_columns,constant_synthetic_columns,accuracy_gap,accuracy_gap,f1_macro_gap,f1_macro_gap
-,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std
-model,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-qtabgan,42.0,,2.0,,6.028753844999301,,0.65,,0.3939393939393939,,0.5121212121212121,,0.6153846153846154,,0.7463562753036437,,0.7878787878787878,,0.9720833333333335,,1.003566449987497,,0.576280407711276,,12.0,,0.35,,0.6060606060606061,

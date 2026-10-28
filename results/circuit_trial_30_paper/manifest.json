@@ -1,0 +1,38 @@
+{
+  "data_sha256": "4c17469be4644ff584cc5fa51ccba4a385a9cc45572ef926f05366646a39f641",
+  "ansatz": "paper",
+  "target": "PersonalLoan",
+  "categorical": [
+    "ZIP Code",
+    "Education",
+    "SecuritiesAccount",
+    "CDAccount",
+    "Online",
+    "CreditCard"
+  ],
+  "seed": 42,
+  "batch_size": 64,
+  "eval_every": 10,
+  "protocol": "stratified 60% train / 20% validation / 20% test; validation macro F1 selection",
+  "paper_reproduction": false,
+  "versions": {
+    "torch": "2.14.1+cpu",
+    "pennylane": "0.45.1",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.9.1"
+  },
+  "source_sha256": {
+    "extended_benchmark.py": "37eae0615063bc60ea3e642ac4d018fee6926cd3ed1364e301eae45062beb897",
+    "benchmark.py": "d14cfb9f26c9b84181288fa2808b2c7ecafc0d67391537416abf0f33c15676d3",
+    "qtabgan/__init__.py": "0eaf5677c10a7870409b0a8376419a9f3ca5b45c1c670923d93636c57ccf4c9d",
+    "qtabgan/config.py": "546edb8bf469eecf70b31283f873d66a2551354ea1eb27e2a6b051cf40b9c43c",
+    "qtabgan/evaluation.py": "a8b9dce111e63d5574795ed8b1a7d7c1fef26517dd6d774927a8b055728ab2e0",
+    "qtabgan/ionq.py": "8e1ec5ea848d53aeac2b96a58fb1ac9da15ca3b4b66ab17332831ad3bea25d6c",
+    "qtabgan/model.py": "4df2ed3dd0c552fcf313979449f9d6750aad3231f88d9b6e153fe85c922bf245",
+    "qtabgan/networks.py": "620f9140908f84f3493821ccb582d8dd201a9b029a65e8659f400c779f57af50",
+    "qtabgan/preprocessing.py": "3e2349aea159dd203f8bb27124bde4ed96986f4c5b03c05af96be340dbaddd14",
+    "qtabgan/quantum_generator.py": "bc275179924875b7a1867c3bc535d764cc500ed02795cf5ef42533a246d4281a",
+    "qtabgan/utils.py": "61d458bbf1ce9427f642fe798fd54754389a0f8d58ed9dd4f8cfd27431f54306"
+  }
+}

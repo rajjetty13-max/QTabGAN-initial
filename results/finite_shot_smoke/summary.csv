@@ -1,2 +1,0 @@
-model,seed,epochs,seconds,accuracy,f1_macro,f1_weighted,confusion_matrix,roc_auc,average_precision,f1_binary,mean_ks,mean_wasserstein,mean_absolute_correlation_difference,constant_synthetic_columns,categorical_jsd,accuracy_gap,f1_macro_gap
-qtabgan,42,2,6.028753844999301,0.65,0.3939393939393939,0.5121212121212121,"[[0, 7], [0, 13]]",0.6153846153846154,0.7463562753036437,0.7878787878787878,0.9720833333333335,1.003566449987497,0.576280407711276,12,,0.35,0.6060606060606061

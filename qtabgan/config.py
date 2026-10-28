@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, Optional
 
 
 @dataclass
@@ -38,3 +38,12 @@ class QTabGANConfig:
 
     # Reproducibility
     seed: int = 42
+
+    # Optional experimental architecture: paper, reuploading, or paper_readout.
+    ansatz: str = "paper"
+
+    # Explicit D(x, y) interpretation of paper section 3.2; old checkpoints remain feature-only.
+    condition_discriminator: bool = False
+
+    # Optional separate classical initialization for paired circuit-depth ablations.
+    classical_init_seed: Optional[int] = None

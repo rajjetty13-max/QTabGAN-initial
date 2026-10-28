@@ -1,0 +1,7 @@
+{
+  "source_run": "results/readout_depth_study/runs/layers_2/seed_44",
+  "resume_epoch": 30,
+  "requested_final_epoch": 100,
+  "epoch_30_checkpoint_sha256": "ad9bc468738c6c20fa0a7867811d58eefc8f48407b2c18bb5ec32729f63ac355",
+  "note": "Original 30-epoch run preserved; viewed splits reused for exploratory continuation."
+}

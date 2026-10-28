@@ -1,0 +1,15 @@
+{
+  "ansatz": "paper_readout",
+  "seed": 43,
+  "qubits": 8,
+  "layers": 2,
+  "gates": 72,
+  "depth": 23,
+  "cnot_count": 16,
+  "parameters": 32,
+  "active_parameters": 32,
+  "stacked_probability_jacobian_rank": 32,
+  "mean_pair_total_variation": 0.4959301649783291,
+  "mean_normalized_entropy": 0.9201222710275523,
+  "ionq_export_max_probability_error": 1.734723475976807e-17
+}

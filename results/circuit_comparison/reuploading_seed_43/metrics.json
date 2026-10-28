@@ -1,0 +1,15 @@
+{
+  "ansatz": "reuploading",
+  "seed": 43,
+  "qubits": 8,
+  "layers": 2,
+  "gates": 72,
+  "depth": 11,
+  "cnot_count": 16,
+  "parameters": 32,
+  "active_parameters": 32,
+  "stacked_probability_jacobian_rank": 32,
+  "mean_pair_total_variation": 0.646264951398048,
+  "mean_normalized_entropy": 0.8408770638212717,
+  "ionq_export_max_probability_error": 4.163336342344337e-17
+}

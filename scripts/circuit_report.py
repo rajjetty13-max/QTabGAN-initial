@@ -22,6 +22,8 @@ core = QuantumGeneratorCore(a.qubits, a.layers, hadamards_per_layer=a.hadamards_
 if a.checkpoint:
     checkpoint = torch.load(a.checkpoint, map_location='cpu', weights_only=True)
     cfg = checkpoint['config']
+    if cfg.get('ansatz', 'paper') != 'paper':
+        p.error('This probability-preserving simplification applies only to the paper ansatz; use compare_circuits.py for the alternative')
     if (cfg['n_qubits'], cfg['n_layers']) != (a.qubits, a.layers):
         p.error('Checkpoint qubits/layers must match --qubits and --layers')
     if cfg.get('hadamards_per_layer', False) != a.hadamards_per_layer:

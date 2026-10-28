@@ -56,6 +56,12 @@ def evaluate(x, y, test, truth, out, labels, seed):
         axes[1].set(xlabel="Recall", ylabel="Precision")
         for ax in axes: ax.legend()
         fig.tight_layout(); fig.savefig(out / "auc_curves.png"); plt.close(fig)
+    predictions = pd.DataFrame({"truth": truth, "prediction": pred})
+    if len(labels) == 2 and len(clf.classes_) == 2:
+        predictions["positive_probability"] = prob
+        pd.DataFrame({"false_positive_rate": fpr, "true_positive_rate": tpr}).to_csv(out / "roc_curve.csv", index=False)
+        pd.DataFrame({"recall": recall, "precision": precision}).to_csv(out / "precision_recall_curve.csv", index=False)
+    predictions.to_csv(out / "predictions.csv", index=False)
     save_json(out / "utility.json", result)
     return result
 
@@ -97,7 +103,10 @@ def main():
     p.add_argument("--models", nargs="+", choices=["qtabgan", "ctgan"], default=["qtabgan", "ctgan"])
     p.add_argument("--epochs", type=int, default=100)
     p.add_argument("--checkpoints", type=int, nargs="*", default=[])
+    p.add_argument("--condition-discriminator", action="store_true")
+    p.add_argument("--ansatz", choices=["paper", "reuploading", "paper_readout"], default="paper")
     p.add_argument("--qubits", type=int, default=8)
+    p.add_argument("--classical-init-seed", type=int)
     p.add_argument("--layers", type=int, default=2)
     p.add_argument("--hadamards-per-layer", action="store_true")
     p.add_argument("--shots", type=int, default=1024)
@@ -157,7 +166,7 @@ def main():
             out = root / name; out.mkdir(exist_ok=True)
             start = time.perf_counter()
             if name == "qtabgan":
-                cfg = QTabGANConfig(n_qubits=args.qubits, n_layers=args.layers, shots=args.shots,
+                cfg = QTabGANConfig(classical_init_seed=args.classical_init_seed, ansatz=args.ansatz, condition_discriminator=args.condition_discriminator, n_qubits=args.qubits, n_layers=args.layers, shots=args.shots,
                     diff_method=args.diff_method, hadamards_per_layer=args.hadamards_per_layer, finite_shot_training=args.finite_shot_training, epochs=args.epochs, batch_size=args.batch_size, seed=seed)
                 model = QTabGAN(x.shape[1], len(labels), cfg)
                 all_history = {}; previous = 0

@@ -1,0 +1,14 @@
+{
+  "train_rows": 3000,
+  "original_features": 12,
+  "encoded_features": 476,
+  "label_order": [
+    "0",
+    "1"
+  ],
+  "numeric_encoding": "Train 1st/99th percentile clipping; standardize; scale to [0, pi]",
+  "categorical_encoding": "Train-fitted one-hot; unseen categories become all zero",
+  "quantum_input": "Independent uniform random angles in [0, pi], NOT real data rows",
+  "generator": "8 random angles -> 256 quantum probabilities + class one-hot -> classical mapper -> encoded features",
+  "discriminator": "Encoded features plus matching one-hot class labels: D(x,y)"
+}

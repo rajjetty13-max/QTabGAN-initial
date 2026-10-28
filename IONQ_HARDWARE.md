@@ -1,5 +1,7 @@
 # Running a trained QTabGAN generator on IonQ
 
+**Result cleanup note:** The `results/loan_100` folder used in the historical examples below was removed. Those commands require generating a fresh run in the older `benchmark.py` output format first. The retained `extended_benchmark.py` runs use a different layout; the existing `--run` adapter does not directly accept that layout. See [results/README.md](results/README.md) for retained artifacts.
+
 This workflow targets **IonQ Quantum Cloud directly**. It loads a saved QTabGAN checkpoint, runs its quantum circuits on the selected IonQ backend, and turns the returned probabilities into synthetic CSV records using the frozen classical mapper.
 
 It supports checkpoint generation. It does not train parameters on hardware. No cloud jobs were submitted while developing or testing this adapter.

@@ -1,0 +1,27 @@
+{
+  "checkpoint": "results/conditioning_trial_30_control/best.pt",
+  "epochs_trained": 1,
+  "seed": 314159,
+  "latent_samples": 512,
+  "analytic_diagnostic": true,
+  "quantum_probability_rms_std_over_noise": 0.007662568707019091,
+  "quantum_probability_mean_l2_norm": 0.14389079809188843,
+  "class_indicator_l2_norm": 1.0,
+  "per_class": [
+    {
+      "class_index": 0,
+      "encoded_output_rms_std_over_noise": 0.0007397897425107658,
+      "encoded_output_mean_abs": 0.03902091458439827
+    },
+    {
+      "class_index": 1,
+      "encoded_output_rms_std_over_noise": 0.0006748175364919007,
+      "encoded_output_mean_abs": 0.038394615054130554
+    }
+  ],
+  "mean_class_switch_rms_output_change_at_same_noise": 0.007599881384521723,
+  "angle_perturbation_rms": 0.0010081493528559804,
+  "probability_perturbation_rms": 1.3037165444984566e-05,
+  "encoded_output_perturbation_rms_class_0": 1.268610731131048e-06,
+  "interpretation": "Encoded coordinates mix numeric and one-hot features. These sensitivity summaries locate attenuation, not a proven cause of collapse."
+}

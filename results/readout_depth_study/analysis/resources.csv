@@ -1,0 +1,4 @@
+layers,parameters,gates,logical_depth,cnot_gates
+1,16,48,13,8
+2,32,72,23,16
+3,48,96,33,24

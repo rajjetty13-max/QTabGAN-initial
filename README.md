@@ -2,6 +2,26 @@
 
 Compare the hybrid quantum generator with the **SDV CTGAN implementation**, using disjoint train/test rows and explicit training labels. This is a research implementation of [QTabGAN, arXiv:2602.12704v2](https://arxiv.org/abs/2602.12704v2), not a verified reproduction. The paper also includes CTAB-GAN and CTAB-GAN+; CTGAN is a different baseline.
 
+## Current team workflow
+
+**Latest continuation:** [One/two-layer readout circuits through 100 epochs](results/readout_100_study/analysis/REPORT.md) show that the early ranking gain did not persist. Best validation-selected checkpoints are retained; both depths still collapse. The 30-epoch studies remain intact.
+
+**Depth study:** [One/two/three-layer circuit results](results/readout_depth_study/analysis/REPORT.md) retain two layers for validation macro F1. One layer halves the CNOT count and improves epoch-30 AUROC, with lower accuracy/F1. [Protocol and reproduction](DEPTH_EXPERIMENT.md) explain the matched initialization.
+
+**Circuit-only improvement:** [Final-H readout](READOUT_CIRCUIT.md) retains the paper blocks and makes all 32 parameters affect probabilities. [Three-seed training results](results/circuit_readout_screen/REPORT.md) show better mean epoch-30 utility but a tradeoff at validation-selected checkpoints; collapse remains. Enable explicitly with `--ansatz paper_readout`.
+
+**CTGAN comparison restored:** [Matched 100-epoch results](results/conditioning_100_summary/ctgan_comparison/REPORT.md) use the same seed-42 split as QTabGAN. `scripts/matched_ctgan.py` runs SDV CTGAN (dependency in `requirements-lock.txt`); `benchmark.py` retains the original CTGAN comparison path. This is a different baseline from the paper’s CTAB-GAN/CTAB-GAN+.
+
+**100-epoch follow-up:** [Learning curves and results](results/conditioning_100_summary/REPORT.md) show unstable accuracy and continued collapse across three seeds. The original circuit and paper-supported D(x,y) were retained.
+
+**Retained results:** [results/README.md](results/README.md) indexes the retained epoch 1–30 comparisons and new epoch 1–100 runs. Earlier 100-epoch outputs, smoke tests and the interrupted long run were removed. Commands and numeric discussions for those older experiments below are historical; reproducing them requires a fresh run.
+
+[Paper conditioning audit](PAPER_CONDITIONING.md): the latest experiment tests the explicit D(x,y) formulation in §3.2, using the original circuit and an optional label-conditioned discriminator (`--condition-discriminator`). The historical feature-only default remains checkpoint compatible. The [completed three-seed conditioning test](results/conditioning_comparison/REPORT.md) improved validation-selected test AUROC and macro F1, but training remained unstable and both variants collapsed.
+
+**Circuit experiment history:** The extended training run was stopped at epoch 227. [CIRCUIT_DESIGN.md](CIRCUIT_DESIGN.md) explains the experimental circuit, its diagrams, and measured checks: 32 effective parameters instead of 24, and logical depth 11 instead of 22. The [matched 30-epoch training test](results/circuit_trial_30_comparison/REPORT.md) found no predictive-utility improvement, and both circuits still showed severe collapse.
+
+Use [EXPERIMENT_WORKFLOW.md](EXPERIMENT_WORKFLOW.md) for the extended Loan experiment, restart commands, input/correlation plots, and a map from reported numbers to saved evidence. New long QTabGAN runs use `extended_benchmark.py` and the shared `qtabgan/` model; the commands below retain the historical comparison protocol. The new runner selects checkpoints on validation data and reserves a final test set.
+
 ## Install and verify
 
 Python 3.12 was used for the recorded runs. For a CPU installation:
@@ -95,7 +115,7 @@ uniform random angles in [0, pi]
   -> ReLU discriminator (128, 64, 32), one real/fake logit
 ```
 
-The paper uses 8 qubits, so that is the default. Trainable angles start uniformly in [0, 2*pi). The source does not specify all hidden widths, layer counts, optimizer settings, epochs, exact noise encoding, or downstream model settings; these are recorded implementation choices. Its prose is ambiguous about repeating Hadamards; the recorded runs apply them once. `--hadamards-per-layer` explicitly tests the literal repeated-H interpretation (the same initial noise encoding, plus H gates before later variational layers). This is a controlled architecture option; the recorded 100-epoch runs do not use it. The discriminator sees features only, as in the diagram, so it does not explicitly enforce feature/label consistency. Do not silently change this architecture to improve benchmark scores.
+The paper uses 8 qubits, so that is the default. Trainable angles start uniformly in [0, 2*pi). The source does not specify all hidden widths, layer counts, optimizer settings, epochs, exact noise encoding, or downstream model settings; these are recorded implementation choices. Its prose is ambiguous about repeating Hadamards; the recorded runs apply them once. `--hadamards-per-layer` explicitly tests the literal repeated-H interpretation (the same initial noise encoding, plus H gates before later variational layers). This is a controlled architecture option; the recorded 100-epoch runs do not use it. The historical default discriminator sees features only, following Figure 4. Section 3.2 also explicitly defines D(x,y); `--condition-discriminator` tests that equation-based interpretation by concatenating class labels at the discriminator input. This wiring is an explicit assumption; see PAPER_CONDITIONING.md.
 
 Training defaults to batched analytic probabilities and simulator backpropagation, which accelerates the same ideal circuit. `--diff-method parameter-shift` retains a slower circuit-by-circuit alternative; a test verifies agreement between both gradients. The paper describes finite-shot probability estimation and parameter-shift, so analytic training is an explicit deviation. `--finite-shot-training --diff-method parameter-shift --shots 1024` enables finite-shot probability estimates and parameter-shift during training; this path is tested but was not used for the long runs. It is much slower. `--finite-shot-evaluation --shots 1024` uses empirical shot histograms for final generation. Default evaluation is analytic with the default analytic-training configuration. With `--finite-shot-training`, the training QNode already uses sampled probabilities even without `--finite-shot-evaluation`. Neither option simulates gate noise. For a paired comparison from a completed, trusted local checkpoint, run `python scripts/evaluate_shots.py results/loan_100 --shots 1024`; both modes use the same latent angles and training labels, and outputs are written under `qtabgan/paired_1024_shots/`. This isolates generation-time shot uncertainty; training remains analytic. Numerical jitter is disabled in benchmark preprocessing to keep evaluation deterministic; the general preprocessor retains its original `noise_std=1e-5` option. No hardware or quantum advantage is claimed.
 
@@ -155,7 +175,7 @@ Completed 100-epoch accuracy comparison (seed 42, full prepared datasets):
 
 Adult CTGAN AUROC is 0.8650, macro F1 is 0.7368, and its accuracy gap is 0.0387. The paper's Adult QTabGAN accuracy gap is 0.0020; our QTabGAN gap is 0.2150. On Loan those gaps are 0.0220 versus 0.4047. The paper's benchmark is not reproduced by these runs.
 
-See [the combined utility plot](results/comparison.png), [the QTabGAN paper check](results/paper_comparison.csv), and the per-run summaries in `results/adult_100/summary.csv` and `results/loan_100/summary.csv`. Both models completed successfully as computations; QTabGAN fails the statistical utility and diversity checks. Nine unit tests and analytic, finite-shot generation, repeated-H, and finite-shot-training smoke runs passed. Hardware noise experiments remain pending; first resolve the noiseless reproduction and the documented architecture/training ambiguities.
+The raw artifacts and plots for those historical 100-epoch experiments were removed during cleanup. See the [retained results index](results/README.md) for current evidence. Both models completed successfully as computations; QTabGAN fails the statistical utility and diversity checks. Nine unit tests and analytic, finite-shot generation, repeated-H, and finite-shot-training smoke runs passed. Hardware noise experiments remain pending; first resolve the noiseless reproduction and the documented architecture/training ambiguities.
 
 ## IonQ checkpoint generation
 

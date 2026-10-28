@@ -1,0 +1,55 @@
+{
+  "epochs": 100,
+  "training_seconds": 356.2487415380019,
+  "validation": {
+    "accuracy": 0.911,
+    "f1_macro": 0.6604595622598896,
+    "f1_weighted": 0.8961250729630434,
+    "confusion_matrix": [
+      [
+        885,
+        19
+      ],
+      [
+        70,
+        26
+      ]
+    ],
+    "roc_auc": 0.8950497787610618,
+    "average_precision": 0.47155879458939,
+    "f1_binary": 0.36879432624113473
+  },
+  "test": {
+    "accuracy": 0.899,
+    "f1_macro": 0.6245004182544847,
+    "f1_weighted": 0.8839105493075565,
+    "confusion_matrix": [
+      [
+        877,
+        27
+      ],
+      [
+        74,
+        22
+      ]
+    ],
+    "roc_auc": 0.8711225571533923,
+    "average_precision": 0.4090855255413776,
+    "f1_binary": 0.30344827586206896
+  },
+  "encoded_fidelity": {
+    "mean_ks": 0.0038442565186751375,
+    "mean_wasserstein": 0.0037635223368382206,
+    "mean_absolute_correlation_difference": 0.004025951445152772,
+    "unique_pair_correlation_difference": 0.0040408623764311155,
+    "constant_synthetic_columns": 202
+  },
+  "raw_numeric_fidelity": {
+    "mean_ks": 0.1046111111111111,
+    "mean_wasserstein": 1.6054263878413237,
+    "mean_absolute_correlation_difference": 0.09939209075586153,
+    "unique_pair_correlation_difference": 0.11927050890703382,
+    "constant_synthetic_columns": 0
+  },
+  "categorical_jsd": 0.028285181318459456
+}

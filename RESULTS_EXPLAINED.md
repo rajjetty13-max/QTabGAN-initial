@@ -1,5 +1,8 @@
 # Explaining every plot, the pipeline, and the measured results
 
+**Historical results:** The older result folders described below were removed during cleanup. Their numerical discussion is retained as history; current epoch 1–30 reports and images are indexed in [results/README.md](results/README.md).
+
+
 This report explains the saved results in plain language. It uses the measurements already on disk; no models were retrained and no cloud jobs were submitted to create it.
 
 **Main finding:** the computations finished, but the tested QTabGAN configuration produces poor synthetic data. CTGAN performs better in both tested datasets. These experiments do not reproduce the paper's QTabGAN results.
@@ -46,9 +49,9 @@ Always predicting the majority class achieves **76.07% accuracy on Adult** and *
 
 ## 3. The main comparison image
 
-![Combined utility comparison](results/comparison.png)
+Historical figure: Combined utility comparison (artifact removed).
 
-[Open full-size comparison](results/comparison.png). `results/loan_comparison.png` repeats the Loan comparison alone.
+Open full-size comparison (historical artifact removed). `results/loan_comparison.png` repeats the Loan comparison alone.
 
 Each row is a dataset. The columns show accuracy, macro F1 and AUROC. Grey means a classifier trained on real records, blue means trained on CTGAN records, and orange means trained on QTabGAN records. Every bar is evaluated on the same held-out real test set for its dataset. Higher bars are better for these three metrics.
 
@@ -85,7 +88,7 @@ True positive class             FN                   TP
 
 These are downstream prediction counts, not the discriminator's real/fake decisions and not counts of generated rows.
 
-![Loan QTabGAN confusion matrix](results/loan_100/seed_42/qtabgan/confusion.png)
+Historical figure: Loan QTabGAN confusion matrix (artifact removed).
 
 | Dataset | Training source | TN | FP | FN | TP | Positive precision | Positive recall |
 |---|---|---|---|---|---|---|---|
@@ -103,7 +106,7 @@ For Adult QTabGAN, it finds only **320 of 2,338** actual higher-income records, 
 
 ## 5. How to read every `auc_curves.png`
 
-![Adult CTGAN ROC and precision–recall curves](results/adult_100/seed_42/ctgan/auc_curves.png)
+Historical figure: Adult CTGAN ROC and precision–recall curves (artifact removed).
 
 The left plot is the ROC curve. Its horizontal axis is the false-positive rate and its vertical axis is the true-positive rate (recall). Moving toward the upper-left corner is better. The diagonal dashed line represents chance-level ranking. The AUROC in the legend summarizes the curve, not the fraction of correct predictions.
 
@@ -115,7 +118,7 @@ The `real/auc_curves.png` files are the real-trained classifier references. File
 
 ## 6. How to read every `losses.png`
 
-![Adult QTabGAN losses and quantum gradients](results/adult_100/seed_42/qtabgan/losses.png)
+Historical figure: Adult QTabGAN losses and quantum gradients (artifact removed).
 
 QTabGAN has two panels. The left panel shows generator and discriminator training losses over epochs. These are optimization objectives, not accuracy percentages. The right panel shows the average norm (size) of gradients on the quantum parameters. A finite, nonzero gradient confirms that a training signal reaches quantum parameters; it does not prove that the signal produces useful data.
 
@@ -141,11 +144,11 @@ Blue is real training data; orange is synthetic data. Close curves indicate simi
 
 `cdf.png` uses the model's transformed representation, including training-range clipping and one-hot columns. `original_cdf.png` uses original numerical columns and units, before generated values are clipped for comparison. The original-scale plots expose invalid values that transformed/clipped plots can hide. Each image displays up to six features; the CSV diagnostics cover more columns where present.
 
-![Loan QTabGAN original-scale CDFs](results/loan_100/seed_42/qtabgan/original_cdf.png)
+Historical figure: Loan QTabGAN original-scale CDFs (artifact removed).
 
 In Loan QTabGAN, generated ages span only **47.95–48.73**, incomes **66.58–67.60 in the dataset's units**, and mortgage values **61.55–64.38**. That is a tiny range compared with the real table. Orange curves are nearly vertical because many generated records are almost identical.
 
-![Adult QTabGAN original-scale CDFs](results/adult_100/seed_42/qtabgan/original_cdf.png)
+Historical figure: Adult QTabGAN original-scale CDFs (artifact removed).
 
 Adult has invalid values as well as collapsed variation. From the saved synthetic CSV:
 
@@ -203,7 +206,7 @@ Both confusion matrices are `[[804, 552], [80, 64]]`. Shot sampling did not reso
 
 ## 10. How to read circuit images
 
-![Simplified reference circuit](results/circuit/merged.png)
+Historical figure: Simplified reference circuit (artifact removed).
 
 Read the circuit from left to right. Each horizontal line is one qubit; 0–7 means eight qubits. H is a Hadamard gate. RY and RZ rotate a qubit by trainable angles. A filled control dot connected to a circled plus is a CNOT: it conditionally flips the target. The long last connection closes the directed ring. The meter symbols indicate the final computational-basis measurement.
 
@@ -280,102 +283,102 @@ Total images: **99**.
 
 | Image | What it means |
 |---|---|
-| [results/adult_100/seed_42/ctgan/auc_curves.png](results/adult_100/seed_42/ctgan/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. |
-| [results/adult_100/seed_42/ctgan/cdf.png](results/adult_100/seed_42/ctgan/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. |
-| [results/adult_100/seed_42/ctgan/confusion.png](results/adult_100/seed_42/ctgan/confusion.png) | Downstream true-versus-predicted class counts; section 4. |
-| [results/adult_100/seed_42/ctgan/losses.png](results/adult_100/seed_42/ctgan/losses.png) | Training losses; QTabGAN also shows quantum gradient norms; section 6. |
-| [results/adult_100/seed_42/ctgan/original_cdf.png](results/adult_100/seed_42/ctgan/original_cdf.png) | Original numerical units, exposing collapse and invalid values; section 7. |
-| [results/adult_100/seed_42/qtabgan/auc_curves.png](results/adult_100/seed_42/qtabgan/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. |
-| [results/adult_100/seed_42/qtabgan/cdf.png](results/adult_100/seed_42/qtabgan/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. |
-| [results/adult_100/seed_42/qtabgan/circuit.png](results/adult_100/seed_42/qtabgan/circuit.png) | Model quantum circuit topology; section 10. |
-| [results/adult_100/seed_42/qtabgan/confusion.png](results/adult_100/seed_42/qtabgan/confusion.png) | Downstream true-versus-predicted class counts; section 4. |
-| [results/adult_100/seed_42/qtabgan/epoch_100/auc_curves.png](results/adult_100/seed_42/qtabgan/epoch_100/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. |
-| [results/adult_100/seed_42/qtabgan/epoch_100/cdf.png](results/adult_100/seed_42/qtabgan/epoch_100/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. |
-| [results/adult_100/seed_42/qtabgan/epoch_100/confusion.png](results/adult_100/seed_42/qtabgan/epoch_100/confusion.png) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. |
-| [results/adult_100/seed_42/qtabgan/epoch_30/auc_curves.png](results/adult_100/seed_42/qtabgan/epoch_30/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. |
-| [results/adult_100/seed_42/qtabgan/epoch_30/cdf.png](results/adult_100/seed_42/qtabgan/epoch_30/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. |
-| [results/adult_100/seed_42/qtabgan/epoch_30/confusion.png](results/adult_100/seed_42/qtabgan/epoch_30/confusion.png) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. |
-| [results/adult_100/seed_42/qtabgan/losses.png](results/adult_100/seed_42/qtabgan/losses.png) | Training losses; QTabGAN also shows quantum gradient norms; section 6. |
-| [results/adult_100/seed_42/qtabgan/optimized_circuit/merged.png](results/adult_100/seed_42/qtabgan/optimized_circuit/merged.png) | Simplified ideal-probability-equivalent circuit; section 10. |
-| [results/adult_100/seed_42/qtabgan/optimized_circuit/original.png](results/adult_100/seed_42/qtabgan/optimized_circuit/original.png) | Original reference or trained-checkpoint circuit; section 10. |
-| [results/adult_100/seed_42/qtabgan/original_cdf.png](results/adult_100/seed_42/qtabgan/original_cdf.png) | Original numerical units, exposing collapse and invalid values; section 7. |
-| [results/adult_100/seed_42/real/auc_curves.png](results/adult_100/seed_42/real/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. |
-| [results/adult_100/seed_42/real/confusion.png](results/adult_100/seed_42/real/confusion.png) | Downstream true-versus-predicted class counts; section 4. |
-| [results/circuit/merged.png](results/circuit/merged.png) | Simplified ideal-probability-equivalent circuit; section 10. |
-| [results/circuit/original.png](results/circuit/original.png) | Original reference or trained-checkpoint circuit; section 10. |
-| [results/comparison.png](results/comparison.png) | Main two-dataset utility comparison; section 3. |
-| [results/finite_shot_smoke/seed_42/qtabgan/auc_curves.png](results/finite_shot_smoke/seed_42/qtabgan/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
-| [results/finite_shot_smoke/seed_42/qtabgan/cdf.png](results/finite_shot_smoke/seed_42/qtabgan/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Small software check, not a paper benchmark; section 11. |
-| [results/finite_shot_smoke/seed_42/qtabgan/circuit.png](results/finite_shot_smoke/seed_42/qtabgan/circuit.png) | Model quantum circuit topology; section 10. Small software check, not a paper benchmark; section 11. |
-| [results/finite_shot_smoke/seed_42/qtabgan/confusion.png](results/finite_shot_smoke/seed_42/qtabgan/confusion.png) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
-| [results/finite_shot_smoke/seed_42/qtabgan/epoch_1/auc_curves.png](results/finite_shot_smoke/seed_42/qtabgan/epoch_1/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/finite_shot_smoke/seed_42/qtabgan/epoch_1/cdf.png](results/finite_shot_smoke/seed_42/qtabgan/epoch_1/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/finite_shot_smoke/seed_42/qtabgan/epoch_1/confusion.png](results/finite_shot_smoke/seed_42/qtabgan/epoch_1/confusion.png) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/finite_shot_smoke/seed_42/qtabgan/epoch_2/auc_curves.png](results/finite_shot_smoke/seed_42/qtabgan/epoch_2/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/finite_shot_smoke/seed_42/qtabgan/epoch_2/cdf.png](results/finite_shot_smoke/seed_42/qtabgan/epoch_2/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/finite_shot_smoke/seed_42/qtabgan/epoch_2/confusion.png](results/finite_shot_smoke/seed_42/qtabgan/epoch_2/confusion.png) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/finite_shot_smoke/seed_42/qtabgan/losses.png](results/finite_shot_smoke/seed_42/qtabgan/losses.png) | Training losses; QTabGAN also shows quantum gradient norms; section 6. Small software check, not a paper benchmark; section 11. |
-| [results/finite_shot_smoke/seed_42/real/auc_curves.png](results/finite_shot_smoke/seed_42/real/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
-| [results/finite_shot_smoke/seed_42/real/confusion.png](results/finite_shot_smoke/seed_42/real/confusion.png) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
-| [results/finite_training_smoke/seed_42/qtabgan/auc_curves.png](results/finite_training_smoke/seed_42/qtabgan/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
-| [results/finite_training_smoke/seed_42/qtabgan/cdf.png](results/finite_training_smoke/seed_42/qtabgan/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Small software check, not a paper benchmark; section 11. |
-| [results/finite_training_smoke/seed_42/qtabgan/circuit.png](results/finite_training_smoke/seed_42/qtabgan/circuit.png) | Model quantum circuit topology; section 10. Small software check, not a paper benchmark; section 11. |
-| [results/finite_training_smoke/seed_42/qtabgan/confusion.png](results/finite_training_smoke/seed_42/qtabgan/confusion.png) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
-| [results/finite_training_smoke/seed_42/qtabgan/epoch_1/auc_curves.png](results/finite_training_smoke/seed_42/qtabgan/epoch_1/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/finite_training_smoke/seed_42/qtabgan/epoch_1/cdf.png](results/finite_training_smoke/seed_42/qtabgan/epoch_1/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/finite_training_smoke/seed_42/qtabgan/epoch_1/confusion.png](results/finite_training_smoke/seed_42/qtabgan/epoch_1/confusion.png) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/finite_training_smoke/seed_42/qtabgan/losses.png](results/finite_training_smoke/seed_42/qtabgan/losses.png) | Training losses; QTabGAN also shows quantum gradient norms; section 6. Small software check, not a paper benchmark; section 11. |
-| [results/finite_training_smoke/seed_42/real/auc_curves.png](results/finite_training_smoke/seed_42/real/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
-| [results/finite_training_smoke/seed_42/real/confusion.png](results/finite_training_smoke/seed_42/real/confusion.png) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
-| [results/loan_100/seed_42/ctgan/auc_curves.png](results/loan_100/seed_42/ctgan/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. |
-| [results/loan_100/seed_42/ctgan/cdf.png](results/loan_100/seed_42/ctgan/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. |
-| [results/loan_100/seed_42/ctgan/confusion.png](results/loan_100/seed_42/ctgan/confusion.png) | Downstream true-versus-predicted class counts; section 4. |
-| [results/loan_100/seed_42/ctgan/losses.png](results/loan_100/seed_42/ctgan/losses.png) | Training losses; QTabGAN also shows quantum gradient norms; section 6. |
-| [results/loan_100/seed_42/ctgan/original_cdf.png](results/loan_100/seed_42/ctgan/original_cdf.png) | Original numerical units, exposing collapse and invalid values; section 7. |
-| [results/loan_100/seed_42/qtabgan/auc_curves.png](results/loan_100/seed_42/qtabgan/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. |
-| [results/loan_100/seed_42/qtabgan/cdf.png](results/loan_100/seed_42/qtabgan/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. |
-| [results/loan_100/seed_42/qtabgan/circuit.png](results/loan_100/seed_42/qtabgan/circuit.png) | Model quantum circuit topology; section 10. |
-| [results/loan_100/seed_42/qtabgan/confusion.png](results/loan_100/seed_42/qtabgan/confusion.png) | Downstream true-versus-predicted class counts; section 4. |
-| [results/loan_100/seed_42/qtabgan/epoch_100/auc_curves.png](results/loan_100/seed_42/qtabgan/epoch_100/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. |
-| [results/loan_100/seed_42/qtabgan/epoch_100/cdf.png](results/loan_100/seed_42/qtabgan/epoch_100/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. |
-| [results/loan_100/seed_42/qtabgan/epoch_100/confusion.png](results/loan_100/seed_42/qtabgan/epoch_100/confusion.png) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. |
-| [results/loan_100/seed_42/qtabgan/epoch_30/auc_curves.png](results/loan_100/seed_42/qtabgan/epoch_30/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. |
-| [results/loan_100/seed_42/qtabgan/epoch_30/cdf.png](results/loan_100/seed_42/qtabgan/epoch_30/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. |
-| [results/loan_100/seed_42/qtabgan/epoch_30/confusion.png](results/loan_100/seed_42/qtabgan/epoch_30/confusion.png) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. |
-| [results/loan_100/seed_42/qtabgan/losses.png](results/loan_100/seed_42/qtabgan/losses.png) | Training losses; QTabGAN also shows quantum gradient norms; section 6. |
-| [results/loan_100/seed_42/qtabgan/optimized_circuit/merged.png](results/loan_100/seed_42/qtabgan/optimized_circuit/merged.png) | Simplified ideal-probability-equivalent circuit; section 10. |
-| [results/loan_100/seed_42/qtabgan/optimized_circuit/original.png](results/loan_100/seed_42/qtabgan/optimized_circuit/original.png) | Original reference or trained-checkpoint circuit; section 10. |
-| [results/loan_100/seed_42/qtabgan/original_cdf.png](results/loan_100/seed_42/qtabgan/original_cdf.png) | Original numerical units, exposing collapse and invalid values; section 7. |
-| [results/loan_100/seed_42/qtabgan/paired_1024_shots/analytic/auc_curves.png](results/loan_100/seed_42/qtabgan/paired_1024_shots/analytic/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Paired generation experiment; section 9. |
-| [results/loan_100/seed_42/qtabgan/paired_1024_shots/analytic/cdf.png](results/loan_100/seed_42/qtabgan/paired_1024_shots/analytic/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Paired generation experiment; section 9. |
-| [results/loan_100/seed_42/qtabgan/paired_1024_shots/analytic/confusion.png](results/loan_100/seed_42/qtabgan/paired_1024_shots/analytic/confusion.png) | Downstream true-versus-predicted class counts; section 4. Paired generation experiment; section 9. |
-| [results/loan_100/seed_42/qtabgan/paired_1024_shots/finite_shot/auc_curves.png](results/loan_100/seed_42/qtabgan/paired_1024_shots/finite_shot/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Paired generation experiment; section 9. |
-| [results/loan_100/seed_42/qtabgan/paired_1024_shots/finite_shot/cdf.png](results/loan_100/seed_42/qtabgan/paired_1024_shots/finite_shot/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Paired generation experiment; section 9. |
-| [results/loan_100/seed_42/qtabgan/paired_1024_shots/finite_shot/confusion.png](results/loan_100/seed_42/qtabgan/paired_1024_shots/finite_shot/confusion.png) | Downstream true-versus-predicted class counts; section 4. Paired generation experiment; section 9. |
-| [results/loan_100/seed_42/real/auc_curves.png](results/loan_100/seed_42/real/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. |
-| [results/loan_100/seed_42/real/confusion.png](results/loan_100/seed_42/real/confusion.png) | Downstream true-versus-predicted class counts; section 4. |
-| [results/loan_comparison.png](results/loan_comparison.png) | Loan-only utility comparison; section 3. |
-| [results/repeated_h_smoke/seed_42/qtabgan/auc_curves.png](results/repeated_h_smoke/seed_42/qtabgan/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
-| [results/repeated_h_smoke/seed_42/qtabgan/cdf.png](results/repeated_h_smoke/seed_42/qtabgan/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Small software check, not a paper benchmark; section 11. |
-| [results/repeated_h_smoke/seed_42/qtabgan/circuit.png](results/repeated_h_smoke/seed_42/qtabgan/circuit.png) | Model quantum circuit topology; section 10. Small software check, not a paper benchmark; section 11. |
-| [results/repeated_h_smoke/seed_42/qtabgan/confusion.png](results/repeated_h_smoke/seed_42/qtabgan/confusion.png) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
-| [results/repeated_h_smoke/seed_42/qtabgan/epoch_2/auc_curves.png](results/repeated_h_smoke/seed_42/qtabgan/epoch_2/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/repeated_h_smoke/seed_42/qtabgan/epoch_2/cdf.png](results/repeated_h_smoke/seed_42/qtabgan/epoch_2/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/repeated_h_smoke/seed_42/qtabgan/epoch_2/confusion.png](results/repeated_h_smoke/seed_42/qtabgan/epoch_2/confusion.png) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/repeated_h_smoke/seed_42/qtabgan/losses.png](results/repeated_h_smoke/seed_42/qtabgan/losses.png) | Training losses; QTabGAN also shows quantum gradient norms; section 6. Small software check, not a paper benchmark; section 11. |
-| [results/repeated_h_smoke/seed_42/real/auc_curves.png](results/repeated_h_smoke/seed_42/real/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
-| [results/repeated_h_smoke/seed_42/real/confusion.png](results/repeated_h_smoke/seed_42/real/confusion.png) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/ctgan/auc_curves.png](results/smoke/seed_42/ctgan/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/ctgan/cdf.png](results/smoke/seed_42/ctgan/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/ctgan/confusion.png](results/smoke/seed_42/ctgan/confusion.png) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/ctgan/losses.png](results/smoke/seed_42/ctgan/losses.png) | Training losses; QTabGAN also shows quantum gradient norms; section 6. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/qtabgan/auc_curves.png](results/smoke/seed_42/qtabgan/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/qtabgan/cdf.png](results/smoke/seed_42/qtabgan/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/qtabgan/circuit.png](results/smoke/seed_42/qtabgan/circuit.png) | Model quantum circuit topology; section 10. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/qtabgan/confusion.png](results/smoke/seed_42/qtabgan/confusion.png) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/qtabgan/epoch_2/auc_curves.png](results/smoke/seed_42/qtabgan/epoch_2/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/qtabgan/epoch_2/cdf.png](results/smoke/seed_42/qtabgan/epoch_2/cdf.png) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/qtabgan/epoch_2/confusion.png](results/smoke/seed_42/qtabgan/epoch_2/confusion.png) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/qtabgan/losses.png](results/smoke/seed_42/qtabgan/losses.png) | Training losses; QTabGAN also shows quantum gradient norms; section 6. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/real/auc_curves.png](results/smoke/seed_42/real/auc_curves.png) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
-| [results/smoke/seed_42/real/confusion.png](results/smoke/seed_42/real/confusion.png) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
+| results/adult_100/seed_42/ctgan/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. |
+| results/adult_100/seed_42/ctgan/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. |
+| results/adult_100/seed_42/ctgan/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. |
+| results/adult_100/seed_42/ctgan/losses.png (historical artifact removed) | Training losses; QTabGAN also shows quantum gradient norms; section 6. |
+| results/adult_100/seed_42/ctgan/original_cdf.png (historical artifact removed) | Original numerical units, exposing collapse and invalid values; section 7. |
+| results/adult_100/seed_42/qtabgan/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. |
+| results/adult_100/seed_42/qtabgan/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. |
+| results/adult_100/seed_42/qtabgan/circuit.png (historical artifact removed) | Model quantum circuit topology; section 10. |
+| results/adult_100/seed_42/qtabgan/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. |
+| results/adult_100/seed_42/qtabgan/epoch_100/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. |
+| results/adult_100/seed_42/qtabgan/epoch_100/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. |
+| results/adult_100/seed_42/qtabgan/epoch_100/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. |
+| results/adult_100/seed_42/qtabgan/epoch_30/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. |
+| results/adult_100/seed_42/qtabgan/epoch_30/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. |
+| results/adult_100/seed_42/qtabgan/epoch_30/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. |
+| results/adult_100/seed_42/qtabgan/losses.png (historical artifact removed) | Training losses; QTabGAN also shows quantum gradient norms; section 6. |
+| results/adult_100/seed_42/qtabgan/optimized_circuit/merged.png (historical artifact removed) | Simplified ideal-probability-equivalent circuit; section 10. |
+| results/adult_100/seed_42/qtabgan/optimized_circuit/original.png (historical artifact removed) | Original reference or trained-checkpoint circuit; section 10. |
+| results/adult_100/seed_42/qtabgan/original_cdf.png (historical artifact removed) | Original numerical units, exposing collapse and invalid values; section 7. |
+| results/adult_100/seed_42/real/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. |
+| results/adult_100/seed_42/real/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. |
+| results/circuit/merged.png (historical artifact removed) | Simplified ideal-probability-equivalent circuit; section 10. |
+| results/circuit/original.png (historical artifact removed) | Original reference or trained-checkpoint circuit; section 10. |
+| results/comparison.png (historical artifact removed) | Main two-dataset utility comparison; section 3. |
+| results/finite_shot_smoke/seed_42/qtabgan/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
+| results/finite_shot_smoke/seed_42/qtabgan/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Small software check, not a paper benchmark; section 11. |
+| results/finite_shot_smoke/seed_42/qtabgan/circuit.png (historical artifact removed) | Model quantum circuit topology; section 10. Small software check, not a paper benchmark; section 11. |
+| results/finite_shot_smoke/seed_42/qtabgan/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
+| results/finite_shot_smoke/seed_42/qtabgan/epoch_1/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/finite_shot_smoke/seed_42/qtabgan/epoch_1/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/finite_shot_smoke/seed_42/qtabgan/epoch_1/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/finite_shot_smoke/seed_42/qtabgan/epoch_2/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/finite_shot_smoke/seed_42/qtabgan/epoch_2/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/finite_shot_smoke/seed_42/qtabgan/epoch_2/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/finite_shot_smoke/seed_42/qtabgan/losses.png (historical artifact removed) | Training losses; QTabGAN also shows quantum gradient norms; section 6. Small software check, not a paper benchmark; section 11. |
+| results/finite_shot_smoke/seed_42/real/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
+| results/finite_shot_smoke/seed_42/real/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
+| results/finite_training_smoke/seed_42/qtabgan/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
+| results/finite_training_smoke/seed_42/qtabgan/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Small software check, not a paper benchmark; section 11. |
+| results/finite_training_smoke/seed_42/qtabgan/circuit.png (historical artifact removed) | Model quantum circuit topology; section 10. Small software check, not a paper benchmark; section 11. |
+| results/finite_training_smoke/seed_42/qtabgan/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
+| results/finite_training_smoke/seed_42/qtabgan/epoch_1/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/finite_training_smoke/seed_42/qtabgan/epoch_1/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/finite_training_smoke/seed_42/qtabgan/epoch_1/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/finite_training_smoke/seed_42/qtabgan/losses.png (historical artifact removed) | Training losses; QTabGAN also shows quantum gradient norms; section 6. Small software check, not a paper benchmark; section 11. |
+| results/finite_training_smoke/seed_42/real/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
+| results/finite_training_smoke/seed_42/real/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
+| results/loan_100/seed_42/ctgan/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. |
+| results/loan_100/seed_42/ctgan/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. |
+| results/loan_100/seed_42/ctgan/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. |
+| results/loan_100/seed_42/ctgan/losses.png (historical artifact removed) | Training losses; QTabGAN also shows quantum gradient norms; section 6. |
+| results/loan_100/seed_42/ctgan/original_cdf.png (historical artifact removed) | Original numerical units, exposing collapse and invalid values; section 7. |
+| results/loan_100/seed_42/qtabgan/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. |
+| results/loan_100/seed_42/qtabgan/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. |
+| results/loan_100/seed_42/qtabgan/circuit.png (historical artifact removed) | Model quantum circuit topology; section 10. |
+| results/loan_100/seed_42/qtabgan/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. |
+| results/loan_100/seed_42/qtabgan/epoch_100/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. |
+| results/loan_100/seed_42/qtabgan/epoch_100/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. |
+| results/loan_100/seed_42/qtabgan/epoch_100/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. |
+| results/loan_100/seed_42/qtabgan/epoch_30/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. |
+| results/loan_100/seed_42/qtabgan/epoch_30/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. |
+| results/loan_100/seed_42/qtabgan/epoch_30/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. |
+| results/loan_100/seed_42/qtabgan/losses.png (historical artifact removed) | Training losses; QTabGAN also shows quantum gradient norms; section 6. |
+| results/loan_100/seed_42/qtabgan/optimized_circuit/merged.png (historical artifact removed) | Simplified ideal-probability-equivalent circuit; section 10. |
+| results/loan_100/seed_42/qtabgan/optimized_circuit/original.png (historical artifact removed) | Original reference or trained-checkpoint circuit; section 10. |
+| results/loan_100/seed_42/qtabgan/original_cdf.png (historical artifact removed) | Original numerical units, exposing collapse and invalid values; section 7. |
+| results/loan_100/seed_42/qtabgan/paired_1024_shots/analytic/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Paired generation experiment; section 9. |
+| results/loan_100/seed_42/qtabgan/paired_1024_shots/analytic/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Paired generation experiment; section 9. |
+| results/loan_100/seed_42/qtabgan/paired_1024_shots/analytic/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Paired generation experiment; section 9. |
+| results/loan_100/seed_42/qtabgan/paired_1024_shots/finite_shot/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Paired generation experiment; section 9. |
+| results/loan_100/seed_42/qtabgan/paired_1024_shots/finite_shot/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Paired generation experiment; section 9. |
+| results/loan_100/seed_42/qtabgan/paired_1024_shots/finite_shot/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Paired generation experiment; section 9. |
+| results/loan_100/seed_42/real/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. |
+| results/loan_100/seed_42/real/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. |
+| results/loan_comparison.png (historical artifact removed) | Loan-only utility comparison; section 3. |
+| results/repeated_h_smoke/seed_42/qtabgan/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
+| results/repeated_h_smoke/seed_42/qtabgan/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Small software check, not a paper benchmark; section 11. |
+| results/repeated_h_smoke/seed_42/qtabgan/circuit.png (historical artifact removed) | Model quantum circuit topology; section 10. Small software check, not a paper benchmark; section 11. |
+| results/repeated_h_smoke/seed_42/qtabgan/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
+| results/repeated_h_smoke/seed_42/qtabgan/epoch_2/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/repeated_h_smoke/seed_42/qtabgan/epoch_2/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/repeated_h_smoke/seed_42/qtabgan/epoch_2/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/repeated_h_smoke/seed_42/qtabgan/losses.png (historical artifact removed) | Training losses; QTabGAN also shows quantum gradient norms; section 6. Small software check, not a paper benchmark; section 11. |
+| results/repeated_h_smoke/seed_42/real/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
+| results/repeated_h_smoke/seed_42/real/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/ctgan/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/ctgan/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/ctgan/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/ctgan/losses.png (historical artifact removed) | Training losses; QTabGAN also shows quantum gradient norms; section 6. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/qtabgan/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/qtabgan/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/qtabgan/circuit.png (historical artifact removed) | Model quantum circuit topology; section 10. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/qtabgan/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/qtabgan/epoch_2/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/qtabgan/epoch_2/cdf.png (historical artifact removed) | Up to six features in transformed/clipped model coordinates; section 7. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/qtabgan/epoch_2/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Earlier/final checkpoint snapshot; section 8. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/qtabgan/losses.png (historical artifact removed) | Training losses; QTabGAN also shows quantum gradient norms; section 6. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/real/auc_curves.png (historical artifact removed) | ROC/AUROC and precision–recall/AP; section 5. Small software check, not a paper benchmark; section 11. |
+| results/smoke/seed_42/real/confusion.png (historical artifact removed) | Downstream true-versus-predicted class counts; section 4. Small software check, not a paper benchmark; section 11. |

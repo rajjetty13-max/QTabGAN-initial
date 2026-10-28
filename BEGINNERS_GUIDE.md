@@ -273,6 +273,8 @@ The detailed audit and experiment commands are in [README.md](README.md).
 
 ## What experiments were actually run?
 
+The older runs discussed in this section are historical. Their result folders were removed; the completed epoch 1–30 experiments and reports are listed in [results/README.md](results/README.md).
+
 The main experiments used two public classification datasets:
 
 - **Adult:** demographic records with an income-category target.
@@ -308,7 +310,7 @@ A gap of `0.0020` means 0.20 percentage points; a gap of `0.2150` means 21.50 pe
 
 These are exploratory, single-seed results. The paper and local runs also have different real-trained reference scores, so matching a gap by itself would not prove exact reproduction.
 
-See the [combined comparison plot](results/comparison.png) and [paper-comparison table](results/paper_comparison.csv).
+The raw artifacts for these historical runs were removed during cleanup. See the [retained epoch 1–30 results](results/README.md) for current reports and plots.
 
 ## What went wrong with QTabGAN?
 

@@ -1,0 +1,27 @@
+{
+  "utility": {
+    "accuracy": 0.563,
+    "f1_macro": 0.4550952336419465,
+    "f1_weighted": 0.6510211914336482,
+    "confusion_matrix": [
+      [
+        504,
+        400
+      ],
+      [
+        37,
+        59
+      ]
+    ],
+    "roc_auc": 0.6904383296460176,
+    "average_precision": 0.2906129660147824,
+    "f1_binary": 0.2126126126126126
+  },
+  "fidelity": {
+    "mean_ks": 0.01804439746300216,
+    "mean_wasserstein": 0.01951114041186906,
+    "mean_absolute_correlation_difference": 0.7604245774327252,
+    "unique_pair_correlation_difference": 0.9125094929192701,
+    "constant_synthetic_columns": 467
+  }
+}
