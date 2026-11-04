@@ -1,0 +1,2 @@
+# Include this lesson's small reviewable diagnostics despite the root CSV ignore.
+!outputs/demo/*.csv

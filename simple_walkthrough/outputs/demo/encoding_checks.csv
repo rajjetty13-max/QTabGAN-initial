@@ -1,0 +1,7 @@
+feature,training_categories,validation_unknown_fraction,test_unknown_fraction
+ZIP Code,272,0.285,0.29
+Education,3,0.0,0.0
+SecuritiesAccount,2,0.0,0.0
+CDAccount,2,0.0,0.0
+Online,2,0.0,0.0
+CreditCard,2,0.0,0.0

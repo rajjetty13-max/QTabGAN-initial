@@ -4,6 +4,8 @@ The retained experiments include the original **1–30 epoch** comparisons and n
 
 ## Start here
 
+**Latest diagnostic-led model work:** [Initialization comparison](quantum_initialization_study/README.md) retains the promising gain-4 candidate and its limitations. [Learning-rate study](optimizer_balance_study/README.md) records two rejected candidates; [original balance audit](training_balance_audit/README.md) provides the motivation. Each training study is grouped in its own folder.
+
 **100-epoch readout continuation:** [readout_100_study/](readout_100_study/README.md) preserves six resumed runs and the matched one/two-layer learning curves. The early one-layer AUROC advantage did not persist; validation-selected checkpoints remain better than the endpoints. Original 30-epoch runs are unchanged.
 
 **Latest depth experiment:** [readout_depth_study/](readout_depth_study/README.md) groups nine 30-epoch runs, their circuit diagrams, curves and comparison report. One layer is a lower-cost ranking candidate; two retains the best validation macro F1.

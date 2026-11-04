@@ -1,0 +1,2 @@
+model,accuracy,macro_f1,auroc,average_precision,brier_mse
+real-trained reference,0.945,0.7815509879853043,0.956673451584763,0.9495983379501383,0.033016500000000004

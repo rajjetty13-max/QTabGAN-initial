@@ -1,8 +1,13 @@
 # QTabGAN reproduction workbench
 
+**New beginner walkthrough:** [simple_walkthrough/README.md](simple_walkthrough/README.md) contains an executed, step-by-step notebook, diagnostic outputs, paper-setting notes and a proposed team evidence tracker.
+
+
 Compare the hybrid quantum generator with the **SDV CTGAN implementation**, using disjoint train/test rows and explicit training labels. This is a research implementation of [QTabGAN, arXiv:2602.12704v2](https://arxiv.org/abs/2602.12704v2), not a verified reproduction. The paper also includes CTAB-GAN and CTAB-GAN+; CTGAN is a different baseline.
 
 ## Current team workflow
+
+**Diagnostics-led tuning:** [Paper/diagnostic review](MODEL_BALANCE_REVIEW.md) rejected two learning-rate changes and found a promising [mapper initialization candidate](QUANTUM_INITIALIZATION.md). With `--quantum-init-gain 4`, selected-checkpoint mean test accuracy/F1/AUROC improved in a three-seed 30-epoch study, but AP and late stability did not; collapse remains. Defaults are unchanged.
 
 **Latest continuation:** [One/two-layer readout circuits through 100 epochs](results/readout_100_study/analysis/REPORT.md) show that the early ranking gain did not persist. Best validation-selected checkpoints are retained; both depths still collapse. The 30-epoch studies remain intact.
 

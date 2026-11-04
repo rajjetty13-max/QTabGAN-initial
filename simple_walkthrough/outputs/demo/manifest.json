@@ -1,0 +1,57 @@
+{
+  "purpose": "Teaching demonstration, not benchmark reproduction",
+  "seed": 42,
+  "full_csv_rows": 5000,
+  "selected_rows": 1000,
+  "split": "60/20/20 stratified",
+  "epochs": 5,
+  "configuration": {
+    "n_qubits": 8,
+    "n_layers": 2,
+    "shots": 1024,
+    "diff_method": "backprop",
+    "hadamards_per_layer": false,
+    "finite_shot_training": false,
+    "mapper_hidden": [
+      32,
+      32
+    ],
+    "discriminator_hidden": [
+      32,
+      16
+    ],
+    "batch_size": 64,
+    "epochs": 1,
+    "lr_generator": 0.0002,
+    "lr_discriminator": 0.0002,
+    "device": "cpu",
+    "seed": 42,
+    "ansatz": "paper",
+    "condition_discriminator": true,
+    "classical_init_seed": 42042,
+    "quantum_init_gain": 1.0
+  },
+  "selected_epoch": 1,
+  "selection": "validation macro F1",
+  "random_forest_trees": 100,
+  "numeric_jitter_std": 0,
+  "data_sha256": "4c17469be4644ff584cc5fa51ccba4a385a9cc45572ef926f05366646a39f641",
+  "notebook_source_sha256": "17b4a56e29c2e51b2f4a214080100cc73e96a89938de12ce64c7316a93bdcc94",
+  "source_sha256": {
+    "qtabgan/model.py": "6ee775fa1cf2f0ee201eeadc9d20350e08f820a760664b7e0058376287a8e296",
+    "qtabgan/config.py": "5a907e290dc1036665d513bcdc89c1b872b48a48656aa535ee6591473fd5d2ba",
+    "qtabgan/quantum_generator.py": "de3410ea127a0c840d2bae07acb38c10005bbb888ff595a0021e77226c46de44",
+    "qtabgan/networks.py": "620f9140908f84f3493821ccb582d8dd201a9b029a65e8659f400c779f57af50",
+    "qtabgan/preprocessing.py": "3e2349aea159dd203f8bb27124bde4ed96986f4c5b03c05af96be340dbaddd14",
+    "simple_walkthrough/helpers.py": "4566680202f77da76c4758c810387cc03e51a5745f23dc74f578fc4fe70e4e46"
+  },
+  "versions": {
+    "torch": "2.14.1+cpu",
+    "pennylane": "0.45.1",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.9.1"
+  },
+  "paper_reproduction": false,
+  "hardware_used": false
+}

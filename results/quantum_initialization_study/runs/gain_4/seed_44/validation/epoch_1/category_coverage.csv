@@ -1,0 +1,7 @@
+feature,training_categories,generated_categories,training_category_coverage
+ZIP Code,453,2,0.004415011037527594
+Education,3,1,0.3333333333333333
+SecuritiesAccount,2,1,0.5
+CDAccount,2,1,0.5
+Online,2,1,0.5
+CreditCard,2,1,0.5

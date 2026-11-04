@@ -1,0 +1,20 @@
+{
+  "selected_epoch": 1,
+  "validation_macro_f1": 0.4833659491193738,
+  "real_test": {
+    "accuracy": 0.97,
+    "macro_f1": 0.8980978260869565,
+    "auroc": 0.9888048851410294,
+    "average_precision": 0.9330931495405177,
+    "brier_mse": 0.031007499999999997
+  },
+  "synthetic_test": {
+    "accuracy": 0.805,
+    "macro_f1": 0.44598337950138506,
+    "auroc": 0.5287874382087816,
+    "average_precision": 0.11052054116482428,
+    "brier_mse": 0.22384749999999998
+  },
+  "mean_minimum_within_class_std_ratio": 0.0005438384137587465,
+  "mean_category_coverage": 0.3895016339869281
+}

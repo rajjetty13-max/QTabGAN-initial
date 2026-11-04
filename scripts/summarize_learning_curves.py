@@ -28,7 +28,7 @@ def main():
     manifests=[read(run/'manifest.json') for run in args.runs]
     reports=[read(run/'final_report.json') for run in args.runs]
     for manifest in manifests[1:]:
-        for key in ['data_sha256','ansatz','n_layers','classical_init_seed','hadamards_per_layer','condition_discriminator','target','categorical','batch_size','eval_every','protocol','source_sha256','versions']:
+        for key in ['data_sha256','ansatz','lr_generator','lr_discriminator','n_layers','classical_init_seed','hadamards_per_layer','condition_discriminator','target','categorical','batch_size','eval_every','protocol','source_sha256','versions']:
             if manifest.get(key)!=manifests[0].get(key): parser.error(f'Incompatible {key}')
     if len({m['seed'] for m in manifests})!=len(manifests): parser.error('Repeated seed')
     if len({r['epochs'] for r in reports})!=1: parser.error('Epoch budgets differ')

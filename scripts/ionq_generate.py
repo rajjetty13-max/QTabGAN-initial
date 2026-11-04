@@ -26,8 +26,11 @@ def load_checkpoint(path):
     config.diff_method = "backprop"
     config.finite_shot_training = False
     state = checkpoint["state_dict"]
-    data_dim = state["discriminator.model.network.0.weight"].shape[1]
     condition_dim = state["mapper.model.network.0.weight"].shape[1] - 2 ** config.n_qubits
+    # D(x,y) includes labels in its input width; mapper output is the data width.
+    mapper_layers = {int(key.split(".")[3]): value for key, value in state.items()
+                     if key.startswith("mapper.model.network.") and key.endswith(".weight")}
+    data_dim = mapper_layers[max(mapper_layers)].shape[0]
     model = QTabGAN(data_dim, condition_dim, config)
     model.load_state_dict(state)
     model.eval()

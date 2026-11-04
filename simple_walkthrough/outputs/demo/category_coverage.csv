@@ -1,0 +1,7 @@
+feature,real_categories,fake_categories,coverage
+ZIP Code,272,1,0.003676470588235294
+Education,3,1,0.3333333333333333
+SecuritiesAccount,2,1,0.5
+CDAccount,2,1,0.5
+Online,2,1,0.5
+CreditCard,2,1,0.5

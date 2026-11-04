@@ -107,6 +107,9 @@ def main():
     p.add_argument("--ansatz", choices=["paper", "reuploading", "paper_readout"], default="paper")
     p.add_argument("--qubits", type=int, default=8)
     p.add_argument("--classical-init-seed", type=int)
+    p.add_argument("--quantum-init-gain", type=float, default=1.0)
+    p.add_argument("--lr-generator", type=float, default=2e-4, help="QTabGAN generator learning rate")
+    p.add_argument("--lr-discriminator", type=float, default=2e-4, help="QTabGAN discriminator learning rate")
     p.add_argument("--layers", type=int, default=2)
     p.add_argument("--hadamards-per-layer", action="store_true")
     p.add_argument("--shots", type=int, default=1024)
@@ -124,6 +127,8 @@ def main():
     if args.finite_shot_training and args.diff_method != "parameter-shift":
         p.error("--finite-shot-training requires --diff-method parameter-shift")
     if args.data and not args.target: p.error("--data requires --target")
+    if not np.isfinite([args.lr_generator,args.lr_discriminator]).all() or min(args.lr_generator,args.lr_discriminator)<=0:
+        p.error("Learning rates must be finite and positive")
     torch.set_num_threads(1)
     if args.data:
         df = pd.read_csv(args.data)
@@ -166,7 +171,7 @@ def main():
             out = root / name; out.mkdir(exist_ok=True)
             start = time.perf_counter()
             if name == "qtabgan":
-                cfg = QTabGANConfig(classical_init_seed=args.classical_init_seed, ansatz=args.ansatz, condition_discriminator=args.condition_discriminator, n_qubits=args.qubits, n_layers=args.layers, shots=args.shots,
+                cfg = QTabGANConfig(quantum_init_gain=args.quantum_init_gain, lr_generator=args.lr_generator, lr_discriminator=args.lr_discriminator, classical_init_seed=args.classical_init_seed, ansatz=args.ansatz, condition_discriminator=args.condition_discriminator, n_qubits=args.qubits, n_layers=args.layers, shots=args.shots,
                     diff_method=args.diff_method, hadamards_per_layer=args.hadamards_per_layer, finite_shot_training=args.finite_shot_training, epochs=args.epochs, batch_size=args.batch_size, seed=seed)
                 model = QTabGAN(x.shape[1], len(labels), cfg)
                 all_history = {}; previous = 0

@@ -47,3 +47,6 @@ class QTabGANConfig:
 
     # Optional separate classical initialization for paired circuit-depth ablations.
     classical_init_seed: Optional[int] = None
+
+    # Optional mapper initialization: amplify quantum variation around a calibrated mean.
+    quantum_init_gain: float = 1.0

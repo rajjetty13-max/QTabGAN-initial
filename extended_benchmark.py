@@ -121,6 +121,9 @@ def main():
     p.add_argument('--output', type=Path, required=True); p.add_argument('--epochs', type=int, default=1000)
     p.add_argument('--condition-discriminator', action='store_true')
     p.add_argument('--hadamards-per-layer', action='store_true')
+    p.add_argument('--quantum-init-gain', type=float, default=1.0)
+    p.add_argument('--lr-generator', type=float, default=2e-4)
+    p.add_argument('--lr-discriminator', type=float, default=2e-4)
     p.add_argument('--layers', type=int, default=2)
     p.add_argument('--classical-init-seed', type=int)
     p.add_argument('--ansatz', choices=['paper', 'reuploading', 'paper_readout'], default='paper')
@@ -128,6 +131,8 @@ def main():
     p.add_argument('--eval-every', type=int, default=100); p.add_argument('--resume', action='store_true')
     args = p.parse_args()
     if min(args.epochs,args.batch_size,args.eval_every,args.layers) < 1: p.error('Epochs, batch size and evaluation interval must be positive')
+    if not np.isfinite([args.lr_generator,args.lr_discriminator]).all() or min(args.lr_generator,args.lr_discriminator)<=0:
+        p.error('Learning rates must be finite and positive')
     torch.set_num_threads(1)
     out = args.output
     if out.exists() and not args.resume: p.error('Output exists. Choose a new directory or use --resume.')
@@ -140,6 +145,7 @@ def main():
     features = df.drop(columns=args.target)
     manifest = {'data_sha256': hashlib.sha256(args.data.read_bytes()).hexdigest(),
                 'hadamards_per_layer': args.hadamards_per_layer, 'condition_discriminator': args.condition_discriminator, 'training_seed': args.seed+20000,
+                'quantum_init_gain': args.quantum_init_gain, 'lr_generator': args.lr_generator, 'lr_discriminator': args.lr_discriminator,
                 'n_layers': args.layers, 'classical_init_seed': args.classical_init_seed,
                 'ansatz': args.ansatz, 'target': args.target, 'categorical': args.categorical, 'seed': args.seed,
                 'batch_size': args.batch_size, 'eval_every': args.eval_every,
@@ -164,7 +170,7 @@ def main():
         state = None
     x, validation, test = [pre.transform(features.iloc[idx]) for idx in [tr, va, te]]
     condition = np.eye(len(labels), dtype=np.float32)[y[tr]]
-    config = QTabGANConfig(n_layers=args.layers, classical_init_seed=args.classical_init_seed, ansatz=args.ansatz, hadamards_per_layer=args.hadamards_per_layer, condition_discriminator=args.condition_discriminator, epochs=args.epochs, batch_size=args.batch_size, seed=args.seed)
+    config = QTabGANConfig(quantum_init_gain=args.quantum_init_gain, lr_generator=args.lr_generator, lr_discriminator=args.lr_discriminator, n_layers=args.layers, classical_init_seed=args.classical_init_seed, ansatz=args.ansatz, hadamards_per_layer=args.hadamards_per_layer, condition_discriminator=args.condition_discriminator, epochs=args.epochs, batch_size=args.batch_size, seed=args.seed)
     model = QTabGAN(x.shape[1], len(labels), config)
     if not args.resume:
         core = model.quantum_generator

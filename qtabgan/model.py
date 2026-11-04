@@ -3,6 +3,7 @@
 Feature-only discrimination remains the default for historical checkpoint compatibility.
 """
 import numpy as np
+import pennylane as qml
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
@@ -29,6 +30,26 @@ class QTabGAN(nn.Module):
                                       data_dim, config.mapper_hidden)
         self.discriminator = Discriminator(data_dim + (condition_dim if config.condition_discriminator else 0),
                                            config.discriminator_hidden)
+        if not np.isfinite(config.quantum_init_gain) or config.quantum_init_gain <= 0:
+            raise ValueError("quantum_init_gain must be finite and positive")
+        self.quantum_initialization_mean = None
+        if config.quantum_init_gain != 1.0:
+            # Fold centering/scaling into initial W and b, leaving the paper's
+            # raw [probabilities, label] -> ReLU MLP architecture unchanged.
+            # Calibration is analytic and uses random latent inputs, not data rows.
+            local_rng = torch.Generator().manual_seed(config.seed + 31000)
+            z = torch.rand(256, config.n_qubits, generator=local_rng) * np.pi
+            device = qml.device("default.qubit", wires=config.n_qubits, seed=config.seed + 31000)
+            calibration = qml.QNode(self.quantum_generator._probabilities, device,
+                                    interface="torch", diff_method=None)
+            first = self.mapper.model.network[0]
+            with torch.no_grad():
+                mean = calibration(z, self.quantum_generator.weights).to(first.weight.dtype).mean(0)
+                quantum_weights = first.weight[:, :2 ** config.n_qubits]
+                old_mean_contribution = quantum_weights @ mean
+                quantum_weights.mul_(config.quantum_init_gain)
+                first.bias.add_((1.0 - config.quantum_init_gain) * old_mean_contribution)
+                self.quantum_initialization_mean = mean.clone()
         self.to(config.device)
 
     def discriminate(self, features, condition):

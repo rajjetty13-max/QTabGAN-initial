@@ -1,0 +1,4 @@
+split,rows,class_0,class_1
+train,600,542,58
+validation,200,181,19
+test,200,181,19
