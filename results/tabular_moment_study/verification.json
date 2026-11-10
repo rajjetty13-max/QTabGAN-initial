@@ -1,0 +1,22 @@
+{
+  "completed_runs": 9,
+  "epochs_per_run": 30,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "full_unittest_suite": {
+    "tests": 47,
+    "result": "passed"
+  },
+  "control_losses_exactly_match_prior_gain4_study": {
+    "42": true,
+    "43": true,
+    "44": true
+  },
+  "paired_protocol_and_launch_source_audit": "analysis/protocol_audit.csv; analysis/source_audit.csv",
+  "calibration_check": "independent recomputation matched all per-seed thresholds and test accuracy/macro F1",
+  "later_live_source_changes": "integer schema validation, numeric_dim=0 warning fix, plot label; exact launch source retained in source/",
+  "paper_pdf_sha256": "a3a6b8ea290025482bd6d63fcb64b66d4ea8baf4a292c419bec8c1f32dc22062"
+}

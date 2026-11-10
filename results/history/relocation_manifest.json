@@ -1,0 +1,260 @@
+{
+  "date": "2026-11-10",
+  "operation": "reversible relocation; no unique experiment evidence deleted",
+  "results_before": {
+    "files": 9359,
+    "bytes": 611959648
+  },
+  "results_after_at_cleanup": {
+    "files": 1833,
+    "bytes": 120728315
+  },
+  "archive": "archives/legacy_results_2026-11-10",
+  "archive_stats": {
+    "files": 7527,
+    "bytes": 491232963
+  },
+  "moves": [
+    {
+      "from": "results/circuit_screen_combined_h_seed_42",
+      "to": "archives/legacy_results_2026-11-10/results/circuit_screen_combined_h_seed_42",
+      "files": 125,
+      "bytes": 8672296
+    },
+    {
+      "from": "results/circuit_screen_original_seed_42",
+      "to": "archives/legacy_results_2026-11-10/results/circuit_screen_original_seed_42",
+      "files": 125,
+      "bytes": 8681800
+    },
+    {
+      "from": "results/circuit_screen_original_seed_43",
+      "to": "archives/legacy_results_2026-11-10/results/circuit_screen_original_seed_43",
+      "files": 125,
+      "bytes": 8716687
+    },
+    {
+      "from": "results/circuit_screen_original_seed_44",
+      "to": "archives/legacy_results_2026-11-10/results/circuit_screen_original_seed_44",
+      "files": 125,
+      "bytes": 8687847
+    },
+    {
+      "from": "results/circuit_screen_readout_h_seed_42",
+      "to": "archives/legacy_results_2026-11-10/results/circuit_screen_readout_h_seed_42",
+      "files": 125,
+      "bytes": 8691023
+    },
+    {
+      "from": "results/circuit_screen_readout_h_seed_43",
+      "to": "archives/legacy_results_2026-11-10/results/circuit_screen_readout_h_seed_43",
+      "files": 125,
+      "bytes": 8706110
+    },
+    {
+      "from": "results/circuit_screen_readout_h_seed_44",
+      "to": "archives/legacy_results_2026-11-10/results/circuit_screen_readout_h_seed_44",
+      "files": 125,
+      "bytes": 8659258
+    },
+    {
+      "from": "results/circuit_screen_repeated_h_seed_42",
+      "to": "archives/legacy_results_2026-11-10/results/circuit_screen_repeated_h_seed_42",
+      "files": 125,
+      "bytes": 8686690
+    },
+    {
+      "from": "results/circuit_trial_30_paper",
+      "to": "archives/legacy_results_2026-11-10/results/circuit_trial_30_paper",
+      "files": 125,
+      "bytes": 8676563
+    },
+    {
+      "from": "results/circuit_trial_30_reuploading",
+      "to": "archives/legacy_results_2026-11-10/results/circuit_trial_30_reuploading",
+      "files": 125,
+      "bytes": 8678544
+    },
+    {
+      "from": "results/conditioning_trial_100_seed_42",
+      "to": "archives/legacy_results_2026-11-10/results/conditioning_trial_100_seed_42",
+      "files": 238,
+      "bytes": 13056488
+    },
+    {
+      "from": "results/conditioning_trial_100_seed_43",
+      "to": "archives/legacy_results_2026-11-10/results/conditioning_trial_100_seed_43",
+      "files": 238,
+      "bytes": 13110051
+    },
+    {
+      "from": "results/conditioning_trial_100_seed_44",
+      "to": "archives/legacy_results_2026-11-10/results/conditioning_trial_100_seed_44",
+      "files": 238,
+      "bytes": 13037848
+    },
+    {
+      "from": "results/conditioning_trial_30_conditional",
+      "to": "archives/legacy_results_2026-11-10/results/conditioning_trial_30_conditional",
+      "files": 127,
+      "bytes": 8683919
+    },
+    {
+      "from": "results/conditioning_trial_30_conditional_seed_43",
+      "to": "archives/legacy_results_2026-11-10/results/conditioning_trial_30_conditional_seed_43",
+      "files": 125,
+      "bytes": 8716655
+    },
+    {
+      "from": "results/conditioning_trial_30_conditional_seed_44",
+      "to": "archives/legacy_results_2026-11-10/results/conditioning_trial_30_conditional_seed_44",
+      "files": 125,
+      "bytes": 8687815
+    },
+    {
+      "from": "results/conditioning_trial_30_control",
+      "to": "archives/legacy_results_2026-11-10/results/conditioning_trial_30_control",
+      "files": 127,
+      "bytes": 8673000
+    },
+    {
+      "from": "results/conditioning_trial_30_control_seed_43",
+      "to": "archives/legacy_results_2026-11-10/results/conditioning_trial_30_control_seed_43",
+      "files": 125,
+      "bytes": 8709445
+    },
+    {
+      "from": "results/conditioning_trial_30_control_seed_44",
+      "to": "archives/legacy_results_2026-11-10/results/conditioning_trial_30_control_seed_44",
+      "files": 125,
+      "bytes": 8669206
+    },
+    {
+      "from": "results/optimizer_balance_study/runs",
+      "to": "archives/legacy_results_2026-11-10/results/optimizer_balance_study/runs",
+      "files": 1125,
+      "bytes": 78225363
+    },
+    {
+      "from": "results/quantum_initialization_study/runs",
+      "to": "archives/legacy_results_2026-11-10/results/quantum_initialization_study/runs",
+      "files": 1125,
+      "bytes": 78353575
+    },
+    {
+      "from": "results/readout_depth_study/runs",
+      "to": "archives/legacy_results_2026-11-10/results/readout_depth_study/runs",
+      "files": 1125,
+      "bytes": 78134569
+    },
+    {
+      "from": "results/readout_100_study/runs",
+      "to": "archives/legacy_results_2026-11-10/results/readout_100_study/runs",
+      "files": 1434,
+      "bytes": 78318211
+    },
+    {
+      "from": "results/circuit_comparison",
+      "to": "results/history/circuit_comparison",
+      "files": 34,
+      "bytes": 718414
+    },
+    {
+      "from": "results/circuit_readout_screen",
+      "to": "results/history/circuit_readout_screen",
+      "files": 6,
+      "bytes": 438556
+    },
+    {
+      "from": "results/circuit_trial_30_comparison",
+      "to": "results/history/circuit_trial_30_comparison",
+      "files": 4,
+      "bytes": 186501
+    },
+    {
+      "from": "results/conditioning_100_summary",
+      "to": "results/history/conditioning_100_summary",
+      "files": 33,
+      "bytes": 1243407
+    },
+    {
+      "from": "results/conditioning_comparison",
+      "to": "results/history/conditioning_comparison",
+      "files": 5,
+      "bytes": 119215
+    },
+    {
+      "from": "results/conditioning_comparison_seed_42",
+      "to": "results/history/conditioning_comparison_seed_42",
+      "files": 4,
+      "bytes": 186168
+    },
+    {
+      "from": "results/conditioning_comparison_seed_43",
+      "to": "results/history/conditioning_comparison_seed_43",
+      "files": 4,
+      "bytes": 199647
+    },
+    {
+      "from": "results/conditioning_comparison_seed_44",
+      "to": "results/history/conditioning_comparison_seed_44",
+      "files": 4,
+      "bytes": 171130
+    },
+    {
+      "from": "results/readout_circuit_diagnostics",
+      "to": "results/history/readout_circuit_diagnostics",
+      "files": 34,
+      "bytes": 751571
+    },
+    {
+      "from": "results/training_balance_audit",
+      "to": "results/history/training_balance_audit",
+      "files": 3,
+      "bytes": 28771
+    },
+    {
+      "from": "results/optimizer_balance_study",
+      "to": "results/history/optimizer_balance_study",
+      "files": 10,
+      "bytes": 624274
+    },
+    {
+      "from": "results/quantum_initialization_study",
+      "to": "results/history/quantum_initialization_study",
+      "files": 25,
+      "bytes": 1261855
+    },
+    {
+      "from": "results/readout_depth_study",
+      "to": "results/history/readout_depth_study",
+      "files": 17,
+      "bytes": 970203
+    },
+    {
+      "from": "results/readout_100_study",
+      "to": "results/history/readout_100_study",
+      "files": 16,
+      "bytes": 881742
+    }
+  ],
+  "updated_markdown_files": [
+    "MODEL_BALANCE_REVIEW.md",
+    "PAPER_CONDITIONING.md",
+    "CIRCUIT_DESIGN.md",
+    "DEPTH_EXPERIMENT.md",
+    "READOUT_CIRCUIT.md",
+    "QUANTUM_INITIALIZATION.md",
+    "results/history/quantum_initialization_study/README.md",
+    "results/history/readout_depth_study/README.md",
+    "results/history/optimizer_balance_study/README.md",
+    "results/history/conditioning_comparison/REPORT.md"
+  ],
+  "unresolved_relocated_markdown_targets": [],
+  "protected_roots": [
+    "ctgan_matched_100_seed_42",
+    "tabular_moment_100_study",
+    "tabular_moment_study"
+  ],
+  "note": "100-epoch runs were active during inventory, so later growth in protected active results is expected."
+}

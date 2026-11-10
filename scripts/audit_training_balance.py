@@ -21,6 +21,12 @@ def main():
     p.add_argument('--output',type=Path,required=True)
     a=p.parse_args()
     if a.output.exists():p.error('Choose a fresh output folder')
+    # Reject unsupported heads before creating a misleading partial audit.
+    for root in a.runs:
+        for which in ['best','latest']:
+            state=torch.load(root/f'{which}.pt',weights_only=True,map_location='cpu')
+            if state['config'].get('tabular_output',False):
+                p.error('Raw mapper diagnostics assume a linear head; mixed-type output is unsupported')
     a.output.mkdir(parents=True)
     torch.set_num_threads(1)
     data=pd.read_csv(a.data);rows=[]

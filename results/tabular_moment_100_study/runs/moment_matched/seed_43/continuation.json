@@ -1,0 +1,13 @@
+{
+  "from_epoch": 30,
+  "requested_total_epochs": 100,
+  "source_run": "results/tabular_moment_study/runs/moment_matched/seed_43",
+  "checkpoint_sha256": "1f07f23434d93f825719fe644f241864d2105c0d3e7a7a1ce8b29ea56079042d",
+  "protocol": "Continue same weights, Adam states and RNG; same split; original epoch-30 artifacts preserved",
+  "source": "Exact launch source snapshot retained in ../../../../source",
+  "start_epoch": 30,
+  "target_epoch": 100,
+  "source_checkpoint_sha256": "1f07f23434d93f825719fe644f241864d2105c0d3e7a7a1ce8b29ea56079042d",
+  "optimizer_state_resumed": true,
+  "rng_state_resumed": true
+}

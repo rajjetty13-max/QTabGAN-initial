@@ -43,9 +43,9 @@ This is local analytic simulation with backpropagation. The paper's finite-shot 
 
 All nine runs completed. Two layers retained the best mean validation macro F1 (0.5409), compared with 0.5146 for one and 0.5137 for three. One layer is retained as a lower-cost candidate: its fixed-epoch-30 mean test AUROC was **0.7808** versus **0.7383** for two, using **8 versus 16 CNOTs**, but accuracy and macro F1 were lower. Three layers did not justify the extra cost under the declared selection criterion. All depths remained collapsed.
 
-[Full report and gate costs](results/readout_depth_study/analysis/REPORT.md) · [Validation curves](results/readout_depth_study/analysis/validation_curves.png) · [Circuit diagrams and per-seed evidence](results/readout_depth_study/README.md). All 29 tests passed; historical defaults remain unchanged.
+[Full report and gate costs](results/history/readout_depth_study/analysis/REPORT.md) · [Validation curves](results/history/readout_depth_study/analysis/validation_curves.png) · [Circuit diagrams and per-seed evidence](results/history/readout_depth_study/README.md). All 29 tests passed; historical defaults remain unchanged.
 
 
 ## Continued to 100 epochs
 
-One- and two-layer checkpoints were copied and resumed to 100 epochs for all three seeds, preserving the 30-epoch study. The early one-layer endpoint AUROC advantage did not persist. Validation-selected test macro F1 was 0.5536 versus 0.5603, and AUROC 0.7476 versus 0.7726, for one versus two layers. Both remained collapsed; extra epochs did not solve stability. See the [100-epoch comparison and curves](results/readout_100_study/analysis/REPORT.md).
+One- and two-layer checkpoints were copied and resumed to 100 epochs for all three seeds, preserving the 30-epoch study. The early one-layer endpoint AUROC advantage did not persist. Validation-selected test macro F1 was 0.5536 versus 0.5603, and AUROC 0.7476 versus 0.7726, for one versus two layers. Both remained collapsed; extra epochs did not solve stability. See the [100-epoch comparison and curves](results/history/readout_100_study/analysis/REPORT.md).

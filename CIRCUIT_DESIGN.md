@@ -45,12 +45,12 @@ Logical depth is the number of sequential gate layers inferred from wire depende
 
 ## Open the evidence
 
-- [Original circuit](results/circuit_comparison/paper_seed_42/circuit.png)
-- [Experimental circuit](results/circuit_comparison/reuploading_seed_42/circuit.png)
-- [Resource and sensitivity comparison](results/circuit_comparison/comparison.png)
-- [Every parameter's probability sensitivity](results/circuit_comparison/parameter_sensitivity.png)
-- [All six measured rows](results/circuit_comparison/summary.csv)
-- [Reproducibility manifest](results/circuit_comparison/manifest.json)
+- [Original circuit](results/history/circuit_comparison/paper_seed_42/circuit.png)
+- [Experimental circuit](results/history/circuit_comparison/reuploading_seed_42/circuit.png)
+- [Resource and sensitivity comparison](results/history/circuit_comparison/comparison.png)
+- [Every parameter's probability sensitivity](results/history/circuit_comparison/parameter_sensitivity.png)
+- [All six measured rows](results/history/circuit_comparison/summary.csv)
+- [Reproducibility manifest](results/history/circuit_comparison/manifest.json)
 
 Each seed's subfolder includes the exact circuit text and image, per-angle derivatives, Jacobian singular values, and metrics. Re-run diagnostics into a fresh directory:
 
@@ -76,9 +76,9 @@ A circuit-only diagnostic cannot establish better GAN accuracy or reproduction o
 
 A matched 30-epoch full-Loan test used seed 42, batch size 64, the same stratified 60/20/20 split and the same classical networks. Checkpoints were selected by validation macro F1. On the final test set, the original circuit scored AUROC **0.7413**, macro F1 **0.5052**, and average precision **0.3536**; the alternative scored **0.7377**, **0.4592**, and **0.2895**. Both showed severe collapse. The selected epochs were 30 and 20 respectively.
 
-The structural improvement did not yield better predictive utility in this short single-seed test. See the [complete report and plots](results/circuit_trial_30_comparison/REPORT.md). Keep the original as the performance baseline while investigating the mapper and conditioning path. More seeds are needed before claiming a reliable model ranking.
+The structural improvement did not yield better predictive utility in this short single-seed test. See the [complete report and plots](results/history/circuit_trial_30_comparison/REPORT.md). Keep the original as the performance baseline while investigating the mapper and conditioning path. More seeds are needed before claiming a reliable model ranking.
 
 
 ## Follow-up: retain the paper blocks and change readout
 
-The new [final-H readout experiment](READOUT_CIRCUIT.md) keeps the original RY/RZ and ordered CNOT ring, rather than using reuploading. It makes all 32 angles effective with one added logical layer. Eight training runs tested it and the repeated-H interpretation; [the full report](results/circuit_readout_screen/REPORT.md) records fixed-budget gains, selected-checkpoint tradeoffs and remaining collapse.
+The new [final-H readout experiment](READOUT_CIRCUIT.md) keeps the original RY/RZ and ordered CNOT ring, rather than using reuploading. It makes all 32 angles effective with one added logical layer. Eight training runs tested it and the repeated-H interpretation; [the full report](results/history/circuit_readout_screen/REPORT.md) records fixed-budget gains, selected-checkpoint tradeoffs and remaining collapse.

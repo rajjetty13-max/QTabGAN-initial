@@ -20,6 +20,8 @@ def main():
     torch.set_num_threads(1)
     state=torch.load(args.checkpoint,map_location='cpu',weights_only=True)
     cfg=QTabGANConfig(**state['config']);cfg.device='cpu';cfg.diff_method='backprop';cfg.finite_shot_training=False
+    if cfg.tabular_output:
+        parser.error('Raw mapper diagnostics assume a linear head; mixed-type output is unsupported')
     model=QTabGAN(state['data_dim'],state['condition_dim'],cfg)
     model.load_state_dict(state['state_dict']);model.eval()
     generator=torch.Generator().manual_seed(314159)

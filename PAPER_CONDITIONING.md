@@ -45,9 +45,9 @@ These experiments use analytic quantum simulation and backpropagation. The paper
 
 All six 30-epoch runs completed. At validation-selected checkpoints, mean test macro F1 increased from **0.5184 to 0.5767**, AUROC from **0.5767 to 0.7239**, and average precision from **0.2035 to 0.3106**. Mean accuracy decreased from **0.7763 to 0.7407**. Macro F1 and AUROC improved in each paired seed, but the epoch-30 comparison did not show a consistent benefit. Both variants still show severe collapse, so these are early-checkpoint gains rather than a solved benchmark.
 
-See the [full three-seed report, variability and diagnostic plots](results/conditioning_comparison/REPORT.md). All 25 unit tests passed. The next paper-based optimization work should retain the documented mapper activations and test the unspecified training settings using validation and diversity diagnostics.
+See the [full three-seed report, variability and diagnostic plots](results/history/conditioning_comparison/REPORT.md). All 25 unit tests passed. The next paper-based optimization work should retain the documented mapper activations and test the unspecified training settings using validation and diversity diagnostics.
 
 
 ## 100-epoch follow-up
 
-Three new runs extended the same settings to 100 epochs, exactly reproducing the earlier first 30 loss epochs. They did not show sustained accuracy improvement. Mean final-epoch test accuracy was 56.8%, macro F1 0.4365 and AUROC 0.5986, with severe collapse. See the [full learning curves and diagnostics](results/conditioning_100_summary/REPORT.md). These runs reuse the earlier exploratory splits; they are not an independent confirmation.
+Three new runs extended the same settings to 100 epochs, exactly reproducing the earlier first 30 loss epochs. They did not show sustained accuracy improvement. Mean final-epoch test accuracy was 56.8%, macro F1 0.4365 and AUROC 0.5986, with severe collapse. See the [full learning curves and diagnostics](results/history/conditioning_100_summary/REPORT.md). These runs reuse the earlier exploratory splits; they are not an independent confirmation.

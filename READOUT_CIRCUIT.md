@@ -27,7 +27,7 @@ This fixes invisible final phase parameters, not circuit depth. The added readou
 
 The mean pairwise total-variation distance between probability vectors decreased in these untrained checks, while entropy increased. That is a tradeoff, not proof of better diversity. The generated-row tests below are needed to judge utility.
 
-[Structural metrics](results/readout_circuit_diagnostics/summary.csv) · [Parameter sensitivity plot](results/readout_circuit_diagnostics/parameter_sensitivity.png) · [Original diagram](results/readout_circuit_diagnostics/paper_seed_42/circuit.png) · [New diagram](results/readout_circuit_diagnostics/paper_readout_seed_42/circuit.png)
+[Structural metrics](results/history/readout_circuit_diagnostics/summary.csv) · [Parameter sensitivity plot](results/history/readout_circuit_diagnostics/parameter_sensitivity.png) · [Original diagram](results/history/readout_circuit_diagnostics/paper_seed_42/circuit.png) · [New diagram](results/history/readout_circuit_diagnostics/paper_readout_seed_42/circuit.png)
 
 Tests verify that the only added operations are final Hadamards, all parameter gradients can be nonzero, backprop agrees with parameter-shift, finite-shot sampling remains normalized, and exported IonQ QIS reproduces local probabilities. Training, shot sampling and export all use the same operation definition. No cloud job was submitted.
 
@@ -55,9 +55,9 @@ For the original control, use `--ansatz paper`. For the paper's repeated-H inter
 
 Eight 30-epoch runs completed: four initial variants at seed 42 and paired original/readout checks at seeds 43 and 44. At the fixed epoch-30 endpoint, mean accuracy improved **53.7% → 62.4%**, macro F1 **0.4425 → 0.5039**, and AUROC **0.7137 → 0.7381**. With validation-selected checkpoints, AUROC improved but accuracy and macro F1 decreased. Both variants remain collapsed; this is a mixed result, not a solved benchmark. The default circuit is unchanged.
 
-[Full experiment report](results/circuit_readout_screen/REPORT.md) · [Paired score plots](results/circuit_readout_screen/paired_test_scores.png) · [Validation curves](results/circuit_readout_screen/validation_curves.png)
+[Full experiment report](results/history/circuit_readout_screen/REPORT.md) · [Paired score plots](results/history/circuit_readout_screen/paired_test_scores.png) · [Validation curves](results/history/circuit_readout_screen/validation_curves.png)
 
 
 ## Follow-up: quantum layer count
 
-The [one/two/three-layer study](results/readout_depth_study/analysis/REPORT.md) held classical initialization fixed and tested three seeds per depth. Two layers retained the best validation macro F1; one layer halved CNOTs and improved epoch-30 AUROC with an accuracy/F1 tradeoff. All nine source runs are grouped in `results/readout_depth_study/`.
+The [one/two/three-layer study](results/history/readout_depth_study/analysis/REPORT.md) held classical initialization fixed and tested three seeds per depth. Two layers retained the best validation macro F1; one layer halved CNOTs and improved epoch-30 AUROC with an accuracy/F1 tradeoff. All nine source runs are grouped in `results/readout_depth_study/`.

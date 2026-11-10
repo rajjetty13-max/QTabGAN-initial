@@ -3,9 +3,11 @@
 Feature-only discrimination remains the default for historical checkpoint compatibility.
 """
 import numpy as np
+from numbers import Integral
 import pennylane as qml
 import torch
 from torch import nn
+from torch.nn import functional as F
 from torch.utils.data import DataLoader, TensorDataset
 from .config import QTabGANConfig
 from .quantum_generator import QuantumGeneratorCore
@@ -19,6 +21,17 @@ class QTabGAN(nn.Module):
         self.config = config or QTabGANConfig()
         config = self.config
         self.data_dim, self.condition_dim = data_dim, condition_dim
+        if not np.isfinite(config.moment_loss_weight) or config.moment_loss_weight < 0:
+            raise ValueError("moment_loss_weight must be finite and nonnegative")
+        if not np.isfinite(config.categorical_temperature) or config.categorical_temperature <= 0:
+            raise ValueError("categorical_temperature must be finite and positive")
+        if config.tabular_output or config.moment_loss_weight:
+            if (isinstance(config.numerical_dim, bool) or
+                    not isinstance(config.numerical_dim, Integral) or config.numerical_dim < 0 or
+                    any(isinstance(width, bool) or not isinstance(width, Integral) or width < 1
+                        for width in config.categorical_dims) or
+                    config.numerical_dim + sum(config.categorical_dims) != data_dim):
+                raise ValueError("Output schema must cover data_dim in numeric/categorical order")
         set_seed(config.seed)
         self.quantum_generator = QuantumGeneratorCore(
             config.n_qubits, config.n_layers, config.shots, config.diff_method, config.seed,
@@ -65,7 +78,19 @@ class QTabGAN(nn.Module):
         noise = self._noise(len(condition))
         probabilities = (self.quantum_generator.sampled_probabilities(noise) if sample
                          else self.quantum_generator(noise))
-        return self.mapper(probabilities, condition)
+        generated = self.mapper(probabilities, condition)
+        if not self.config.tabular_output:
+            return generated
+        # Explicit extension to the paper's linear head. Straight-through samples
+        # put real/fake categories on identical support while retaining gradients.
+        numeric = self.config.numerical_dim
+        parts = [np.pi * torch.sigmoid(generated[:, :numeric])]
+        offset = numeric
+        for width in self.config.categorical_dims:
+            parts.append(F.gumbel_softmax(generated[:, offset:offset + width],
+                         tau=self.config.categorical_temperature, hard=True, dim=1))
+            offset += width
+        return torch.cat(parts, dim=1)
 
     def generate(self, condition, sample=False):
         """Use the training probability QNode; sample=True uses shot histograms."""
@@ -98,9 +123,17 @@ class QTabGAN(nn.Module):
             self._discriminator_optimizer = torch.optim.Adam(self.discriminator.parameters(), lr=self.config.lr_discriminator)
         g_opt, d_opt = self._generator_optimizer, self._discriminator_optimizer
         criterion = nn.BCEWithLogitsLoss()
+        moment_loss = None
+        if self.config.moment_loss_weight:
+            from .regularization import ConditionalMomentLoss
+            moment_loss = ConditionalMomentLoss(data, conditions, self.config.numerical_dim,
+                                               self.config.categorical_dims)
         history = {key: [] for key in ['generator_loss', 'discriminator_loss', 'quantum_gradient_norm']}
+        if moment_loss is not None:
+            history['adversarial_loss'] = []
+            history['moment_loss'] = []
         for epoch in range(self.config.epochs):
-            totals = np.zeros(3)
+            totals = np.zeros(len(history))
             for real, condition in loader:
                 d_opt.zero_grad(set_to_none=True)
                 real_logits = self.discriminate(real, condition)
@@ -113,14 +146,22 @@ class QTabGAN(nn.Module):
                 d_loss.backward(); d_opt.step()
 
                 g_opt.zero_grad(set_to_none=True)
-                logits = self.discriminate(self.generate_from_condition(condition), condition)
-                g_loss = criterion(logits, torch.ones_like(logits))
+                generated = self.generate_from_condition(condition)
+                logits = self.discriminate(generated, condition)
+                adversarial_loss = criterion(logits, torch.ones_like(logits))
+                g_loss = adversarial_loss
+                if moment_loss is not None:
+                    penalty = moment_loss(generated, condition)
+                    g_loss = g_loss + self.config.moment_loss_weight * penalty
                 if not torch.isfinite(g_loss): raise FloatingPointError('Nonfinite generator loss')
                 g_loss.backward()
                 gradient = self.quantum_generator.weights.grad
                 if gradient is None or not torch.isfinite(gradient).all():
                     raise FloatingPointError('Missing or nonfinite quantum gradients')
-                totals += [g_loss.item(), d_loss.item(), gradient.norm().item()]
+                values = [g_loss.item(), d_loss.item(), gradient.norm().item()]
+                if moment_loss is not None:
+                    values += [adversarial_loss.item(), penalty.item()]
+                totals += values
                 g_opt.step()
             for key, value in zip(history, totals / len(loader)):
                 history[key].append(float(value))

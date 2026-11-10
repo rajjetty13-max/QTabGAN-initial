@@ -50,3 +50,11 @@ class QTabGANConfig:
 
     # Optional mapper initialization: amplify quantum variation around a calibrated mean.
     quantum_init_gain: float = 1.0
+
+    # Experimental mixed-type output and train-only conditional moment penalty.
+    # Disabled defaults retain the paper-based linear mapper/checkpoint behavior.
+    tabular_output: bool = False
+    numerical_dim: Optional[int] = None
+    categorical_dims: Tuple[int, ...] = ()
+    categorical_temperature: float = 0.5
+    moment_loss_weight: float = 0.0

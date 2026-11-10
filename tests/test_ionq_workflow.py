@@ -16,7 +16,7 @@ import torch
 from qtabgan import QTabGAN, QTabGANConfig
 from qtabgan.preprocessing import TabularPreprocessor
 from qtabgan.ionq import collect_bundle, load_bundle, simulate_qis, submit_bundle, write_json
-from scripts.ionq_generate import local, map_probabilities, prepare
+from scripts.ionq_generate import load_checkpoint, local, map_probabilities, prepare
 
 
 class MemoryIonQ:
@@ -43,6 +43,56 @@ class MemoryIonQ:
 
 
 class WorkflowTests(unittest.TestCase):
+    def typed_checkpoint(self, path):
+        config = QTabGANConfig(n_qubits=2, n_layers=1, mapper_hidden=(8,),
+                              discriminator_hidden=(8,), tabular_output=True,
+                              numerical_dim=1, categorical_dims=(2,))
+        model = QTabGAN(3, 2, config)
+        torch.save({'config': asdict(config), 'state_dict': model.state_dict(),
+                    'data_dim': 3, 'condition_dim': 2, 'epochs_trained': 0}, path)
+
+    def test_typed_checkpoint_loads_but_legacy_export_rejects_before_writes_or_network(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            run = root / 'run'
+            checkpoint = run / 'seed_42' / 'qtabgan' / 'model.pt'
+            checkpoint.parent.mkdir(parents=True)
+            self.typed_checkpoint(checkpoint)
+            write_json(run / 'manifest.json', {})
+            loaded, _ = load_checkpoint(checkpoint)
+            self.assertTrue(loaded.config.tabular_output)
+            args = argparse.Namespace(run=run, seed=42, rows=2, shots=128,
+                                      backend='simulator', debias=False, output=root / 'bundle')
+            bundle = root / 'existing_bundle'
+            bundle.mkdir()
+            self.typed_checkpoint(bundle / 'checkpoint.pt')
+            with patch('requests.sessions.Session.request', side_effect=AssertionError('No network allowed')):
+                with self.assertRaisesRegex(ValueError, 'mixed-type output.*legacy IonQ exporter'):
+                    prepare(args)
+                self.assertFalse(args.output.exists())
+                with self.assertRaisesRegex(ValueError, 'mixed-type output.*legacy IonQ exporter'):
+                    map_probabilities(bundle, {}, [], 'ionq')
+            self.assertEqual([path.name for path in bundle.iterdir()], ['checkpoint.pt'])
+
+    def test_raw_mapper_diagnostics_reject_typed_checkpoint_before_output(self):
+        from scripts import audit_training_balance, diagnose_mapper
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.typed_checkpoint(root / 'best.pt')
+            with patch('sys.argv', ['diagnose_mapper.py', str(root / 'best.pt'),
+                                    '--output', str(root / 'mapper.json')]):
+                with self.assertRaises(SystemExit) as rejected:
+                    diagnose_mapper.main()
+                self.assertEqual(rejected.exception.code, 2)
+            self.assertFalse((root / 'mapper.json').exists())
+            with patch('sys.argv', ['audit_training_balance.py', '--runs', str(root),
+                                    '--data', str(root / 'unused.csv'),
+                                    '--output', str(root / 'audit')]):
+                with self.assertRaises(SystemExit) as rejected:
+                    audit_training_balance.main()
+                self.assertEqual(rejected.exception.code, 2)
+            self.assertFalse((root / 'audit').exists())
+
     def test_prepare_local_cloud_roundtrip_uses_snapshot_and_mapper(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

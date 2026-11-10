@@ -37,6 +37,12 @@ def load_checkpoint(path):
     return model, checkpoint
 
 
+def require_legacy_output(model):
+    if model.config.tabular_output:
+        raise ValueError("Experimental mixed-type output is unsupported by the legacy IonQ exporter; "
+                         "use model.generate for local inference")
+
+
 def prepare(args):
     if args.output.exists():
         raise FileExistsError(f"Output bundle already exists: {args.output}")
@@ -51,6 +57,7 @@ def prepare(args):
     preprocessor_path = root / "preprocessor.joblib"
     manifest = json.loads((args.run / "manifest.json").read_text())
     model, checkpoint = load_checkpoint(checkpoint_path)
+    require_legacy_output(model)
     if not manifest["arguments"].get("data") or not manifest["arguments"].get("target"):
         raise ValueError("Use a CSV-backed classification benchmark with saved labels and target")
     labels = manifest["labels"]
@@ -110,6 +117,7 @@ def map_probabilities(directory, plan, probabilities, name):
     """Use the frozen classical mapper and saved inverse transform on this CPU."""
     directory = Path(directory)
     model, _ = load_checkpoint(directory / "checkpoint.pt")
+    require_legacy_output(model)
     preprocessor = joblib.load(directory / "preprocessor.joblib")
     probabilities = np.asarray(probabilities, dtype=float)
     if probabilities.shape != (plan["rows"], 2 ** plan["n_qubits"]):

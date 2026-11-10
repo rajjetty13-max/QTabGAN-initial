@@ -4,7 +4,7 @@
 
 ## What to say in one minute
 
-> We are trying to generate realistic rows of bank data. Our generator combines a quantum circuit with a normal neural network called the mapper. A discriminator learns to tell real and generated rows apart. We then train a separate Random Forest on generated rows and test it on held-out real rows. That Random Forest produces our accuracy, F1 and AUC numbers. Our main problem is collapse: generated rows within a class are much too similar. The recent initialization change improved several prediction metrics and increased variation, but it did not solve collapse or training instability.
+> We are trying to generate realistic rows of bank data. Our generator combines a quantum circuit with a normal neural network called the mapper. A discriminator learns to tell real and generated rows apart. We then train a separate Random Forest on generated rows and test it on held-out real rows. That Random Forest produces our accuracy, F1 and AUC numbers. Our latest change makes generated categories valid and encourages each class's numeric spread and relationships to match the training data. Continuing the same three models through 100 epochs raised mean validation-selected test accuracy from 85.2% to 91.0%, macro F1 from 0.697 to 0.754, and AUC from 0.876 to 0.893. Minority recall fell from 71.5% to 59.7%, so the improvement has a tradeoff.
 
 **Keep two experiments separate:**
 
@@ -13,20 +13,23 @@
 | Purpose | Understand every step | Compare a specific model change |
 | Data | 1,000 sampled Loan rows | All 5,000 Loan rows |
 | Training/validation/test | 600 / 200 / 200 | 3,000 / 1,000 / 1,000 per seed |
-| Epochs | 5 | 30 |
+| Epochs | 5 | 30, continued to 100 |
 | Seeds | 42 | 42, 43, 44 |
 | Circuit | Original paper-based circuit | Same two-layer final-H readout circuit in both compared variants |
 | Classical hidden widths | Mapper (32,32), discriminator (32,16) | Mapper (128,128), discriminator (128,64,32) |
-| Initialization | Gain 1 | Gains 1, 4 and 16 |
+| Initialization | Gain 1 | Gain 4 in both control and candidate |
+| Output and objective | Linear mapper; adversarial loss | Control: linear mapper; candidate: valid categorical samples, bounded numbers and a class-statistics penalty |
 
-**The teaching run's 80.5% accuracy and the new experiment's 77.0% are not directly comparable.** They use different training budgets and networks. The valid before/after comparison for the new experiment is 69.4% versus 77.0% within its matched protocol.
+**The teaching run's 80.5% accuracy and the research candidate's 91.0% are not directly comparable.** They use different data, training budgets and networks. The matched 30-epoch model change improved **77.0% to 85.2%**; continuing that candidate to a 100-epoch budget improved **85.2% to 91.0%**. These are three-seed means. **87.2% was one candidate seed's 30-epoch score, not the mean.**
+
+All three 100-epoch continuations are complete. They resumed the saved epoch-30 weights, Adam state and random-number state, and their first 30 loss/validation entries match exactly. The original 30-epoch comparison remains preserved. **91.0% describes checkpoints selected by validation through the 100-epoch budget; the actual epoch-100 checkpoints average 89.7%.**
 
 ## Four figures to open first
 
 1. [Teaching learning dashboard](outputs/demo/learning_dashboard.png): losses, gradients, validation scores and diversity together.
 2. [Generated versus real distributions](outputs/demo/generated_vs_real.png): shows why the generated data is still poor.
 3. [Teaching test confusion matrices](outputs/demo/test_confusion_matrices.png): shows the mistakes hidden by accuracy.
-4. [Actual improvement comparison](../results/quantum_initialization_study/analysis_all_gains/validation_curves.png): compare the candidate with its matched control.
+4. [100-epoch continuation comparison](../results/tabular_moment_100_study/analysis/validation_curves.png): inspect the longer trajectories and retained checkpoints. The [30-epoch model-change comparison](../results/tabular_moment_study/analysis/validation_curves.png) establishes the original control versus candidate.
 
 ## 1. What `run_notebook.py` actually does
 
@@ -219,7 +222,7 @@ A ratio near 1 alone is not sufficient either: the mean, shape, category relatio
 
 [Correlation comparison](outputs/demo/correlation_checks.png) shows real, generated and absolute-error matrices. Error near 0 means similar correlations; large error means lost relationships. Blank cells indicate undefined correlations, often from constant columns. Correlation can be unstable when variation is tiny, and matching correlation alone cannot establish realism.
 
-[An example CDF plot from the research candidate](../results/quantum_initialization_study/runs/gain_4/seed_42/test/best/cdf.png) is another distribution check: X = encoded value, Y = fraction of rows at or below that value. Separated curves reveal shifts; a sharp jump reveals concentration. Those plots use clipped/re-encoded values, so use raw histograms and range checks alongside them. This example is **not from the teaching run**.
+[An example CDF plot from the research candidate](../results/tabular_moment_study/runs/moment_matched/seed_42/test/best/cdf.png) is another distribution check: X = encoded value, Y = fraction of rows at or below that value. Separated curves reveal shifts; a sharp jump reveals concentration. Those plots use clipped/re-encoded values, so use raw histograms and range checks alongside them. This example is **not from the teaching run**.
 
 ## 5. How the final prediction works
 
@@ -234,26 +237,55 @@ Saved example: original CSV row **4648**, observed class **0**. The synthetic-tr
 
 ## 6. Actual model-improvement evidence: a separate experiment
 
-![Three-seed initialization comparison](../results/quantum_initialization_study/analysis_all_gains/validation_curves.png)
+![Three-seed output and class-statistics comparison](../results/tabular_moment_study/analysis/validation_curves.png)
 
-The recent change initializes the mapper's first layer to amplify quantum-probability variation around a calibrated mean. It preserves that first layer's response at the mean. It changes neither the architecture nor the adversarial loss; the paper does not specify a classical initialization recipe. Calibration uses random latent inputs, not held-out data.
+The earlier initialization experiment produced the gain-4 control. The latest experiment keeps that initialization and quantum circuit fixed, then changes two parts of generation:
 
-Mean test scores across three seeds, with checkpoints chosen by validation macro F1:
+1. A numeric sigmoid keeps encoded numbers in `[0, pi]`; straight-through Gumbel-softmax sampling makes each categorical block exactly one-hot while retaining a training gradient.
+2. An additional generator penalty matches numeric means, standard deviations and covariances within each class, plus categorical frequencies. Its targets come only from training rows. It compares distributions rather than arbitrarily pairing generated and real customers.
 
-| Diagnostic | Gain 1 baseline | Gain 4 candidate | Interpretation |
+These are explicit extensions to the paper's linear mapper and adversarial objective. Gumbel sampling adds classical randomness during training and inference. More category coverage therefore does not establish a quantum improvement or quantum advantage. The teaching notebook keeps its original output and objective.
+
+Mean test scores across three seeds after 30 epochs, with checkpoints chosen by validation macro F1:
+
+| Diagnostic | Gain-4 control | Output + moments candidate | Interpretation |
 | --- | ---: | ---: | --- |
-| Accuracy | 69.4% | 77.0% | Improved, but below 90.4% majority accuracy |
-| Macro F1 | 0.5453 | 0.6013 | Improved balanced class performance |
-| AUROC | 0.7428 | 0.7923 | Improved ranking |
-| AP | 0.3701 | 0.3563 | Slightly worse; not all metrics improved |
-| Mean minimum within-class std ratio | 0.257% | 1.259% | About 4.9× more spread, still severely collapsed |
-| Raw numeric KS | 0.6137 | 0.5975 | Slightly closer numeric distributions; lower is better |
+| Accuracy | 77.0% | 85.2% | Improved, but below 90.4% majority accuracy |
+| Macro F1 | 0.6013 | 0.6971 | Improved balanced class performance |
+| AUROC | 0.7923 | 0.8764 | Improved ranking |
+| AP | 0.3563 | 0.4093 | Improved precision-recall performance |
+| Minority recall | 54.9% | 71.5% | More positive Loan cases detected |
+| Mean minimum within-class std ratio | 1.26% | 57.56% | Much more numeric spread; not a full distribution guarantee |
+| Category coverage | 40.8% | 96.7% | Valid samples cover more observed categories |
 
-[Full evidence](../results/quantum_initialization_study/analysis_all_gains/REPORT.md) · [Loss curves](../results/quantum_initialization_study/analysis_all_gains/loss_curves.png) · [Diversity checks](../results/quantum_initialization_study/analysis_all_gains/diversity_checks.png)
+[Full evidence](../results/tabular_moment_study/analysis/REPORT.md) · [Loss curves](../results/tabular_moment_study/analysis/loss_curves.png) · [Diversity checks](../results/tabular_moment_study/analysis/diversity_curves.png) · [Run command and implementation](../TABULAR_OUTPUT.md)
 
-The fixed final-epoch macro F1 was worse for gain 4 than for its control. This is an early-checkpoint candidate, not a stable overall improvement or reproduced paper result. The teaching notebook keeps gain 1.
+Output sampling alone fixed categorical validity but left numeric variation near zero and harmed AUROC; the moment penalty matters in this comparison. A moment-only linear-head experiment was not run, so we have not isolated every component's contribution. Seed 42's selected test F1 decreased slightly even though the three-seed mean improved. Training still fluctuates, and these reused splits give exploratory evidence.
 
-The [earlier discriminator-confidence audit](../results/training_balance_audit/discriminator_confidence.png) found mean real-validation probability near 0.983 and fake probability near 0.022 at final 100-epoch checkpoints. That motivated a rate test; it did not prove the rate was the cause. Faster G later reached **90.4% accuracy with AUROC 0.5**—a rejected majority-class collapse. This is the clearest example of why we inspect multiple diagnostics.
+A [separate validation-only threshold audit](../results/tabular_moment_study/threshold_calibration/REPORT.md) gave **86.0%** candidate accuracy versus **83.9%** for the similarly calibrated control. The candidate's minority recall fell to 66.3%. This changes the downstream classifier's decision rule, not generator training; AUROC and AP remain unchanged. Keep these calibrated scores separate from the main comparison.
+
+### Continuing the same candidate to 100 epochs
+
+![Three-seed 100-epoch continuation](../results/tabular_moment_100_study/analysis/validation_curves.png)
+
+The longer budget retained the same split, preprocessor, circuit, initialization, optimizer rates, output adapter and moment weight. It resumed weights, both Adam states and RNG state rather than restarting. Checkpoint selection still uses validation macro F1; test scores do not choose epochs.
+
+| Diagnostic | Selected through 30 epochs | Selected through 100 epochs |
+| --- | ---: | ---: |
+| Accuracy | 85.2% | 91.0% |
+| Macro F1 | 0.6971 | 0.7538 |
+| AUROC | 0.8764 | 0.8932 |
+| AP | 0.4093 | 0.5229 |
+| Minority recall | 71.5% | 59.7% |
+| Mean minimum within-class std ratio | 57.6% | 72.7% |
+
+The selected epochs are **80, 90 and 70** for seeds 42, 43 and 44. Their test accuracies are **90.9%, 91.3% and 90.7%**. The actual final epoch-100 checkpoints average **89.7% accuracy, 0.7042 macro F1 and 0.8515 AUROC**. Later training is therefore not uniformly better than retaining an earlier validation selection.
+
+The selected models beat the 90.4% majority-only accuracy reference by about 0.6 percentage points while providing much better macro F1 than a majority-only classifier. The higher accuracy and precision-recall performance come with **lower minority recall** than at the shorter budget. These remain exploratory results on previously viewed splits, not an independent confirmation or a paper reproduction. No threshold calibration is applied to this 100-epoch report.
+
+[100-epoch results and continuation audits](../results/tabular_moment_100_study/analysis/REPORT.md) · [Numeric diversity curves](../results/tabular_moment_100_study/analysis/diversity_curves.png)
+
+Historical context: the [initialization comparison](../results/history/quantum_initialization_study/analysis_all_gains/REPORT.md) established the gain-4 control. The [earlier discriminator-confidence audit](../results/history/training_balance_audit/discriminator_confidence.png) motivated a rate test; it did not prove the rate was the cause. Faster G later reached **90.4% accuracy with AUROC 0.5**, a rejected majority-class collapse. This is why we inspect several diagnostics. Detailed old runs are retained outside `results/` in the archive described by its cleanup index.
 
 ## 7. A practical debugging order
 
@@ -272,16 +304,18 @@ The notebook verifies numerical execution. The diagnostics determine whether tha
 
 **Why a quantum circuit?** It is the probability-generating component of the paper's hybrid generator. Our results do not establish quantum advantage.
 
-**Why not just train longer?** Our 100-epoch curves often deteriorated. More epochs are not a solution by themselves.
+**Why train to 100 epochs?** It checks whether the new candidate's useful learning persists. Earlier models often deteriorated with more epochs. We keep validation-selected checkpoints and compare them with the fixed final epoch rather than assuming 100 is better than 30.
 
 **Does nonzero gradient mean the model learns good data?** No. It only verifies a path for parameter updates.
 
 **Why did we change the mapper initialization?** The audit showed quantum probabilities changed with noise while mapped rows barely changed. We tested amplifying that variation, then checked useful scores and diversity.
 
+**Why did we change the output and add moments?** The discriminator saw exact one-hot real categories but arbitrary generated values, and numeric rows barely varied. Valid categorical sampling removes that representation mismatch; training-only class statistics directly encourage spread and relationships. Neither guarantees realistic complete distributions.
+
 **Why don't we use row-by-row MSE?** A generated customer is not a reconstruction of a particular real customer. Arbitrarily pairing them gives a misleading reconstruction score.
 
-**Have we reproduced the paper?** No. Author settings remain incomplete; data/split/evaluator choices and analytic sampling differ, and collapse remains.
+**Have we reproduced the paper?** No. Author settings remain incomplete; data/split/evaluator choices and analytic sampling differ. The latest output adapter and moment objective are additional model choices, and a quantum advantage has not been established.
 
-**What are we doing next?** Preserve the baseline and verify whether the gain-4 candidate's improvements survive a longer matched run. Continue judging diversity and rare-class prediction alongside accuracy; do not promise a better circuit or successful hardware run yet.
+**What did the 100-epoch run establish?** The retained validation selections improved mean test accuracy, macro F1, AUROC, AP and numeric spread, while minority recall declined. The epoch-100 endpoints were weaker than the retained selections. Keep the original comparison and inspect this recall tradeoff before further tuning. No hardware result follows from these CPU simulations.
 
 [Notebook](QTabGAN_step_by_step.ipynb) · [Paper settings](PAPER_SETTINGS.md) · [Team ownership/evidence log](TEAM_TASKS.md) · [Output index](outputs/demo/README.md)

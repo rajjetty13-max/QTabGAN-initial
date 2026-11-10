@@ -6,7 +6,7 @@ The previous depth/readout trials had finite quantum gradients but severe collap
 
 `scripts/audit_training_balance.py` inspected the two-layer 100-epoch models at seeds 42/43/44, using training and validation rows only. At their final checkpoints, mean D(real validation) was approximately **0.983**, D(generated) **0.022**, and balanced train real/fake accuracy **0.992**. The discriminator's distinction generalizes beyond its training rows; it is not merely a high training score. Quantum probability variation remains nonzero, while generated fixed-label variation is very small.
 
-[Audit numbers](results/training_balance_audit/audit.csv) · [Discriminator confidence plot](results/training_balance_audit/discriminator_confidence.png)
+[Audit numbers](results/history/training_balance_audit/audit.csv) · [Discriminator confidence plot](results/history/training_balance_audit/discriminator_confidence.png)
 
 This establishes an easy discrimination task and weak generated diversity. It does not prove a single cause. In particular, the non-saturating generator BCE does not automatically have a vanishing derivative with respect to its logit just because D is confident. RMS values in probability space and encoded feature space have different units and cannot be interpreted as an information-retention percentage.
 
@@ -51,8 +51,8 @@ A lower discriminator loss is not the selection target. An intervention that mak
 
 ## Completed outcomes and next candidate
 
-All nine learning-rate trials completed and neither rate candidate improved average validation macro F1. Faster G's apparent 90.4% accuracy was a majority-class collapse (AUROC 0.5). [Rate comparison](results/optimizer_balance_study/analysis/REPORT.md).
+All nine learning-rate trials completed and neither rate candidate improved average validation macro F1. Faster G's apparent 90.4% accuracy was a majority-class collapse (AUROC 0.5). [Rate comparison](results/history/optimizer_balance_study/analysis/REPORT.md).
 
-The follow-up tested a mapper-initialization change without changing architecture or loss: [derivation](QUANTUM_INITIALIZATION.md). Of gains 1/4/16, gain 4 improved selected-checkpoint test accuracy, macro F1 and AUROC across the three-seed mean, with about 5× more numeric within-class variation. It remains collapsed and unstable; AP decreased. [Full evidence](results/quantum_initialization_study/analysis_all_gains/REPORT.md).
+The follow-up tested a mapper-initialization change without changing architecture or loss: [derivation](QUANTUM_INITIALIZATION.md). Of gains 1/4/16, gain 4 improved selected-checkpoint test accuracy, macro F1 and AUROC across the three-seed mean, with about 5× more numeric within-class variation. It remains collapsed and unstable; AP decreased. [Full evidence](results/history/quantum_initialization_study/analysis_all_gains/REPORT.md).
 
 This was 18 short controlled runs, not a successful paper reproduction. Defaults remain the original rates and gain 1. Gain 4 can be selected explicitly with `--quantum-init-gain 4`. The next evaluation should extend this matched comparison without silently changing its circuit, loss, split or selection criterion.

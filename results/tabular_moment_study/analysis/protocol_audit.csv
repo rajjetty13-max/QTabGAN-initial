@@ -1,0 +1,10 @@
+variant,seed,epochs,tabular_output,moment_loss_weight,train_rows,validation_rows,test_rows,numerical_dim,categorical_dims,classical_init_seed,training_seed,source_directory
+control,42,30,False,0.0,3000,1000,1000,6,"[456, 3, 2, 2, 2, 2]",42042,20042,results/tabular_moment_study/runs/control/seed_42
+control,43,30,False,0.0,3000,1000,1000,6,"[459, 3, 2, 2, 2, 2]",42043,20043,results/tabular_moment_study/runs/control/seed_43
+control,44,30,False,0.0,3000,1000,1000,6,"[453, 3, 2, 2, 2, 2]",42044,20044,results/tabular_moment_study/runs/control/seed_44
+typed_output,42,30,True,0.0,3000,1000,1000,6,"[456, 3, 2, 2, 2, 2]",42042,20042,results/tabular_moment_study/runs/typed_output/seed_42
+typed_output,43,30,True,0.0,3000,1000,1000,6,"[459, 3, 2, 2, 2, 2]",42043,20043,results/tabular_moment_study/runs/typed_output/seed_43
+typed_output,44,30,True,0.0,3000,1000,1000,6,"[453, 3, 2, 2, 2, 2]",42044,20044,results/tabular_moment_study/runs/typed_output/seed_44
+moment_matched,42,30,True,10.0,3000,1000,1000,6,"[456, 3, 2, 2, 2, 2]",42042,20042,results/tabular_moment_study/runs/moment_matched/seed_42
+moment_matched,43,30,True,10.0,3000,1000,1000,6,"[459, 3, 2, 2, 2, 2]",42043,20043,results/tabular_moment_study/runs/moment_matched/seed_43
+moment_matched,44,30,True,10.0,3000,1000,1000,6,"[453, 3, 2, 2, 2, 2]",42044,20044,results/tabular_moment_study/runs/moment_matched/seed_44

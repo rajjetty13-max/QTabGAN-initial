@@ -1,0 +1,27 @@
+{
+  "completed_runs": 3,
+  "total_epochs_per_run": 100,
+  "continued_from_epoch": 30,
+  "additional_epochs_per_run": 70,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "full_unittest_suite": {
+    "tests": 47,
+    "result": "passed"
+  },
+  "continuation_audit": "analysis/continuation_audit.csv",
+  "exact_original_histories_and_data": true,
+  "optimizer_steps_before": 1410,
+  "optimizer_steps_after": 4700,
+  "selection": "validation macro F1; checkpoints at epochs 80,90,70",
+  "results_cleanup": {
+    "reversible_relocation_manifest": "../history/relocation_manifest.json",
+    "archived_raw_files": 7527,
+    "archived_raw_bytes": 491232963,
+    "results_bytes_at_final_audit": 133240836,
+    "unique_evidence_deleted": false
+  }
+}

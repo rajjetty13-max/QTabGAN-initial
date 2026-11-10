@@ -109,7 +109,7 @@ def plot_history(history, out):
     h = pd.DataFrame(history)
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
     for c in ['generator_loss', 'discriminator_loss']: axes[0].plot(h.epoch, h[c], label=c)
-    axes[0].legend(); axes[0].set(xlabel='Epoch', ylabel='BCE loss')
+    axes[0].legend(); axes[0].set(xlabel='Epoch', ylabel='Training loss')
     axes[1].plot(h.epoch, h.quantum_gradient_norm); axes[1].set(xlabel='Epoch', ylabel='Quantum gradient norm')
     fig.tight_layout(); fig.savefig(out / 'losses.png'); plt.close(fig)
 
@@ -122,6 +122,9 @@ def main():
     p.add_argument('--condition-discriminator', action='store_true')
     p.add_argument('--hadamards-per-layer', action='store_true')
     p.add_argument('--quantum-init-gain', type=float, default=1.0)
+    p.add_argument('--tabular-output', action='store_true', help='Experimental bounded numeric and straight-through sampled categorical output')
+    p.add_argument('--categorical-temperature', type=float, default=0.5)
+    p.add_argument('--moment-loss-weight', type=float, default=0.0, help='Experimental train-only class-conditional moment penalty')
     p.add_argument('--lr-generator', type=float, default=2e-4)
     p.add_argument('--lr-discriminator', type=float, default=2e-4)
     p.add_argument('--layers', type=int, default=2)
@@ -133,6 +136,10 @@ def main():
     if min(args.epochs,args.batch_size,args.eval_every,args.layers) < 1: p.error('Epochs, batch size and evaluation interval must be positive')
     if not np.isfinite([args.lr_generator,args.lr_discriminator]).all() or min(args.lr_generator,args.lr_discriminator)<=0:
         p.error('Learning rates must be finite and positive')
+    if not np.isfinite(args.moment_loss_weight) or args.moment_loss_weight < 0:
+        p.error('Moment loss weight must be finite and nonnegative')
+    if not np.isfinite(args.categorical_temperature) or args.categorical_temperature <= 0:
+        p.error('Categorical temperature must be finite and positive')
     torch.set_num_threads(1)
     out = args.output
     if out.exists() and not args.resume: p.error('Output exists. Choose a new directory or use --resume.')
@@ -144,6 +151,8 @@ def main():
     y, labels = pd.factorize(df[args.target], sort=True)
     features = df.drop(columns=args.target)
     manifest = {'data_sha256': hashlib.sha256(args.data.read_bytes()).hexdigest(),
+                'tabular_output': args.tabular_output, 'categorical_temperature': args.categorical_temperature,
+                'moment_loss_weight': args.moment_loss_weight,
                 'hadamards_per_layer': args.hadamards_per_layer, 'condition_discriminator': args.condition_discriminator, 'training_seed': args.seed+20000,
                 'quantum_init_gain': args.quantum_init_gain, 'lr_generator': args.lr_generator, 'lr_discriminator': args.lr_discriminator,
                 'n_layers': args.layers, 'classical_init_seed': args.classical_init_seed,
@@ -170,7 +179,11 @@ def main():
         state = None
     x, validation, test = [pre.transform(features.iloc[idx]) for idx in [tr, va, te]]
     condition = np.eye(len(labels), dtype=np.float32)[y[tr]]
-    config = QTabGANConfig(quantum_init_gain=args.quantum_init_gain, lr_generator=args.lr_generator, lr_discriminator=args.lr_discriminator, n_layers=args.layers, classical_init_seed=args.classical_init_seed, ansatz=args.ansatz, hadamards_per_layer=args.hadamards_per_layer, condition_discriminator=args.condition_discriminator, epochs=args.epochs, batch_size=args.batch_size, seed=args.seed)
+    categorical_dims = tuple(len(categories) for categories in pre.encoder.categories_) if pre.encoder is not None else ()
+    config = QTabGANConfig(tabular_output=args.tabular_output, numerical_dim=len(numeric),
+                          categorical_dims=categorical_dims, categorical_temperature=args.categorical_temperature,
+                          moment_loss_weight=args.moment_loss_weight,
+                          quantum_init_gain=args.quantum_init_gain, lr_generator=args.lr_generator, lr_discriminator=args.lr_discriminator, n_layers=args.layers, classical_init_seed=args.classical_init_seed, ansatz=args.ansatz, hadamards_per_layer=args.hadamards_per_layer, condition_discriminator=args.condition_discriminator, epochs=args.epochs, batch_size=args.batch_size, seed=args.seed)
     model = QTabGAN(x.shape[1], len(labels), config)
     if not args.resume:
         core = model.quantum_generator
