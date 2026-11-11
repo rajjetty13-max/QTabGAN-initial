@@ -1,0 +1,50 @@
+{
+  "data_sha256": "4c17469be4644ff584cc5fa51ccba4a385a9cc45572ef926f05366646a39f641",
+  "tabular_output": true,
+  "categorical_temperature": 0.5,
+  "moment_loss_weight": 10.0,
+  "hadamards_per_layer": false,
+  "condition_discriminator": true,
+  "training_seed": 20042,
+  "quantum_init_gain": 4.0,
+  "lr_generator": 0.0002,
+  "lr_discriminator": 0.0002,
+  "n_layers": 2,
+  "classical_init_seed": 42042,
+  "ansatz": "paper_readout",
+  "target": "PersonalLoan",
+  "categorical": [
+    "ZIP Code",
+    "Education",
+    "SecuritiesAccount",
+    "CDAccount",
+    "Online",
+    "CreditCard"
+  ],
+  "seed": 42,
+  "batch_size": 64,
+  "eval_every": 10,
+  "protocol": "stratified 60% train / 20% validation / 20% test; validation macro F1 selection",
+  "paper_reproduction": false,
+  "versions": {
+    "torch": "2.14.1+cpu",
+    "pennylane": "0.45.1",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.9.1"
+  },
+  "source_sha256": {
+    "extended_benchmark.py": "ddeac37fd7106ab2cef86b8702129e6f501d405e913790f7ffc7d2c0ad7b476c",
+    "benchmark.py": "4e39bdb9ef3aabcd6f8e37c0377ef0a7c3893cb8c1845a21ca21469cbd196a9f",
+    "qtabgan\\__init__.py": "ee6520d9d465e5ed4cf4919f47215ffb95fc4fc048abf5559c36d25b8480a9d0",
+    "qtabgan\\config.py": "5ebc48563b0bd8a25b2f8782236827e29d03b02e98c6999602337ddd4e8ba0e5",
+    "qtabgan\\evaluation.py": "dad3db3d3d1f729c40f544f70c6fb10620869a76ebf842e3f6876a70a3b35e0a",
+    "qtabgan\\ionq.py": "a086773b1bf279749df39a4ec93cd6d0e1c3d843c95025864efef3e7cb6ada2a",
+    "qtabgan\\model.py": "285bc85962989ba12a443ad7b9fe0f30516ef5edee8ad701580c6bb315e61556",
+    "qtabgan\\networks.py": "4b70b6f7b0673c1c538e36dcb5ddce645555523377e720e1393920390a515cdf",
+    "qtabgan\\preprocessing.py": "1567977d590c3ad75787cf066847d5adff93a127022fc3c1bed2683b57b50e7d",
+    "qtabgan\\quantum_generator.py": "3318d5c49ae68aa5e2c897cc8fe2a002638fce159e23985bde64b320d2bbae2d",
+    "qtabgan\\regularization.py": "32d2950540b41cc8249942bbe479ee853efbc47898a8d24c48e3f684c7efaeb4",
+    "qtabgan\\utils.py": "d5263ebad9b71b1a8280e4fa382fd715cc565af88acf6aeb1fa526b7c8987678"
+  }
+}
